@@ -18,7 +18,7 @@ export function Login() {
             }
     }}, [])
 
-    function HandleLogIn(e) {
+    function HandleLogIn(e) { // LOG IN FUNCTION
         e.preventDefault()
 
         if(employeeID !== "001" || password !== "password") { // CHECKS TO SEE IF USERS PUT IN A USERNAME & PASSWORD
@@ -32,7 +32,9 @@ export function Login() {
     }
 
     return <>
-            <h1>Centurión Maintenance</h1>
+            <header>
+                <h1>Centurión Maintenance</h1>
+            </header>
             <h2>Log In is "001" & "password" but try something else first!</h2>
             <form className="ls-form" onSubmit={(e)=>{HandleLogIn(e)}}>
             {/* handling for form when user submits on sign in or log in */} 

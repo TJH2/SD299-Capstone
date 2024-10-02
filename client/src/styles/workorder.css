@@ -10,6 +10,15 @@
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     width: 500px;
   }
+
+  .form select {
+    background-color: #fff;
+    color: #777;
+  }
+
+  .form textarea {
+    resize:none;
+  }
   
   .form .form-control {
     margin-bottom: 10px;
@@ -23,12 +32,12 @@
     margin-bottom: 5px;
   }
   
-  .form .form-control input, textarea, fieldset {
+  .form .form-control input, textarea, fieldset, select {
     border: 2px solid #f0f0f0;
     border-radius: 4px;
   }
   
-  .form .form-control input, textarea {
+  .form .form-control input, textarea, select {
     display: block;
     width: 100%;
     padding: 10px;

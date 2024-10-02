@@ -1,11 +1,20 @@
 import React, { useState, useEffect, useRef } from "react";
-import "../styles/workorder.css";
+import "../styles/workorder.css"; // CSS FOR WORKORDER FORM
 
 export function WorkOrder() {
 
     return <> 
             <form id="form" className="form">
                 <h2>Work Order Request</h2>
+
+                <div className="form-control">
+                <label htmlFor="request">Request Type</label>
+                
+                <select name="request" id="request">
+                    <option value="maintenance">Maintenance</option>
+                    <option value="it">Information Technology</option>
+                </select>
+                </div>
 
                 <div className="form-control">
                     <label htmlFor="location" >Location</label>
