@@ -1,0 +1,66 @@
+  .form h2 {
+    text-align: center;
+    margin: 0 0 20px;
+  }
+  
+  .form {
+    padding: 30px 40px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    width: 500px;
+  }
+  
+  .form .form-control {
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+    position: relative;
+  }
+  
+  .form .form-control label, legend {
+    color: #777;
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form .form-control input, textarea, fieldset {
+    border: 2px solid #f0f0f0;
+    border-radius: 4px;
+  }
+  
+  .form .form-control input, textarea {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .form fieldset div {
+    display: flex;
+    align-items: baseline;
+    font-weight: 500;
+    width: fit-content;
+    font-size: 14px;
+  }
+  
+  .form fieldset input {
+    margin-right: 5px;
+  }
+  
+  .form-control input:focus {
+    outline: 0;
+    border-color: #777
+  }
+  
+  .form button {
+    cursor: pointer;
+    background-color: #3498db;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    color: #fff;
+    display: block;
+    font-size: 16px;
+    padding: 10px;
+    margin-top: 20px;
+    width: 100%;
+  }

@@ -1,0 +1,5 @@
+.warning {
+    color: lightcoral;
+    font-weight: bold;
+    visibility: hidden;
+}
