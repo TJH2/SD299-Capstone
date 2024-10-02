@@ -1,6 +1,6 @@
 export function Login() {
 
-
-return <> 
+    return <> 
+        <h2>Log In</h2>
     </>
    }
