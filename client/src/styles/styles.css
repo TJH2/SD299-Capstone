@@ -6,3 +6,9 @@
   body {
     background-color: #f9fafb;
   }
+
+  .warning {
+    color: lightcoral;
+    font-weight: bold;
+    visibility: hidden;
+}

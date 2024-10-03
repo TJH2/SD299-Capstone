@@ -5,19 +5,7 @@ import "../styles/dashboard.css"; // STYLING FOR DASHBOARD PAGE
 
 export function Dashboard() {
 
-    const navigate = useNavigate(); // "react-router-dom" VARIABLE TO NAVIGATE BETWEEN PAGES
-
-    function HandleLogOut() { // LOG OUT FUNCTION
-
-        sessionStorage.removeItem("employeeID");
-        navigate('/');
-    }
-
     return <>
-        <header>
-            <h1>Centurión Maintenance</h1>
-            <button onClick={HandleLogOut}>Log Out</button>
-        </header> 
         <WorkOrder />
     </>
    }

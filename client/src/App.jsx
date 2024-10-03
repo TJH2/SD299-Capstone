@@ -6,8 +6,16 @@ import "./styles/styles.css"; // STYLE FOR ENTIRE WEBSITE
 
 function App() {
 
+  const navigate = useNavigate(); // "react-router-dom" VARIABLE TO NAVIGATE BETWEEN PAGES
+
   return (
     <>
+
+        <header>
+            <h1>Centurión Maintenance</h1>
+            {useLocation().pathname === "/dashboard" ? <Link to="#" onClick={() => {sessionStorage.removeItem("name"); sessionStorage.removeItem("position"); navigate('/');}}>Log Out</Link> : ""}
+            {/* ONLY SHOWS LOG OUT LINK IF USER IS ON DASHBOARD PAGE */}
+        </header> 
 
       <Routes>
                 <Route element={<PrivateRoutes />} >
@@ -22,7 +30,7 @@ function App() {
 
 // FUNCTION FOR PRIVATE ROUTES. HOMEPAGE IS A PRIVATE ROUTE AND ISN'T AVAILABLE UNTIL A USER LOGS IN. ENSURES USERS DON'T MANUALLY PUT HOMEPAGE INTO THE SEARCH BAR
 const PrivateRoutes = () => {
-  const employee = sessionStorage.getItem("employeeID"); // CHECKS SESSION STORAGE FOR EMPLOYEE INFORMATION
+  const employee = sessionStorage.getItem("name"); // CHECKS SESSION STORAGE FOR EMPLOYEE INFORMATION
   return (
       employee ? <Outlet /> : <Navigate to="/" />
   );
