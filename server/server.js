@@ -1,11 +1,23 @@
 const express = require("express");
 const cors = require("cors");
-const {createEmployee, findEmployee, readEmployees, createForm, assignForm, deleteForm} = require("./crud");
+const {readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, deleteRequest} = require("./crud");
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+
+// CREATE NEW EMPLOYEE. POSITION SHOULD BE "EMPLOYEE" OR "MANAGER"
+app.post('/new-employee', (request, response) => {
+    const {email, name, password, department, position} = request.body;
+    createEmployee(email, name, password, department, position, (err, data) => {
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(201).send(`EMPLOYEE CREATED WITH EMAIL: ${email}`)
+        }
+    })
+})
 
 // SEARCH FOR ALL EMPLOYEES
 app.get('/employees', (request, response) => {
@@ -18,11 +30,11 @@ app.get('/employees', (request, response) => {
     })
 })
 
-// SEARCH FOR A PECIFIC EMPLOYEE BY ID & PASSWORD. USED FOR LOGGING IN
+// SEARCH FOR A PECIFIC EMPLOYEE BY EMAIL & PASSWORD. USED FOR LOGGING IN
 app.get('/employee', (request, response) => {
-    const id = request.query.id;
+    const email = request.query.email;
     const password = request.query.password;
-    findEmployee(id, password, (err, data) => {
+    findEmployee(email, password, (err, data) => {
         if(err){
             response.status(500).send(err.message)
         } else {
@@ -31,19 +43,54 @@ app.get('/employee', (request, response) => {
                 return response.status(404).json({message: "User not found"});
             }
             
-            return response.status(200).json([data[0].name, data[0].position])
+            return response.status(200).json([data])
         }
     })
 })
 
-// CREATE NEW EMPLOYEE. POSITION SHOULD BE "EMPLOYEE" OR "MANAGER"
-app.post('/new-employee', (request, response) => {
-    const {name, password, department, position, email} = request.body;
-    createEmployee(name, password, department, position, email, (err, data) => {
+// DELETE A SPECIFIC EMPLOYEE BY ID
+app.delete("/employee/:email", (request, response) => {
+    deleteEmployee(request.params.email, (err) => {
         if(err){
             response.status(500).send(err.message)
         } else {
-            response.status(201).send(`EMPLOYEE CREATED WITH ID: ${data.id}`)
+            response.status(200).json("EMPLOYEE DELETED")
+        }
+    })
+})
+
+// FORM ROUTES
+
+// SEARCH FOR ALL REQUESTS
+app.get('/requests', (request, response) => {
+    readRequests((err, data) => {
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(200).json(data)
+        }
+    })
+})
+
+// DELETE WORK ORDER REQUEST
+app.delete("/request/:id", (request, response) => {
+    deleteRequest(request.params.id, (err) => {
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(200).json("WORK ORDER REQUEST DELETED")
+        }
+    })
+})
+
+// CREATE NEW FORM REQUEST.
+app.post('/new-request', (request, response) => {
+    const {request_type, asset, location, priority, deadline, request_description, employee, employee_contact} = request.body;
+    createRequest(request_type, asset, location, priority, deadline, request_description, employee, employee_contact, (err, data) => {
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(201).send(`NEW WORK ORDER REQUEST CREATED FOR: ${asset}`)
         }
     })
 })

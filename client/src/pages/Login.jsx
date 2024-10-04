@@ -7,13 +7,13 @@ export function Login() {
 
     const navigate = useNavigate(); // "react-router-dom" VARIABLE TO NAVIGATE BETWEEN PAGES
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
-    const [employeeID, setEmployeeID] = useState(""); // HOLDS USERNAME VALUE OF USERNAME INPUT
+    const [employeeEmail, setEmployeeEmail] = useState(""); // HOLDS USERNAME VALUE OF USERNAME INPUT
     const [password, setPassword] = useState(""); // HOLDS PASSWORD VALUE OF PASSWORD INPUT
 
     useEffect(() => { // PREVENTS USER FROM GOING BACK TO LOGGIN PAGE IF ALREADY LOGGED IN
         if (!initialized.current) { // MAKES SURE USEFFECT TRIGGERS ONLY ONCE
             initialized.current = true
-            const employee = sessionStorage.getItem("employeeID"); // CHECKS SESSION STORAGE FOR EMPLOYEE INFORMATION
+            const employee = sessionStorage.getItem("employeeName"); // CHECKS SESSION STORAGE FOR EMPLOYEE INFORMATION
             if(employee) { // IF SESSION STORAGE EXISTS, EMPLOYEE MUST BE LOGGED IN SO GO TO HOMEPAGE
              navigate('/dashboard');
             }
@@ -25,15 +25,17 @@ export function Login() {
         // AXIOS CALL TO SEE IF USERNAME IS IN OUR DATABASE
         axios.get('http://localhost:3000/employee', {
             params: {
-                id: employeeID,
+                email: employeeEmail,
                 password: password
             } 
         }).then(
             response => {
-                        console.log(response.data);
+                        console.log(response.data[0][0]);
                         document.querySelector(".warning").style.visibility = "hidden";
-                        sessionStorage.setItem("name", response.data[0]);
-                        sessionStorage.setItem("position", response.data[1]);
+                        sessionStorage.setItem("employeeName", response.data[0][0].name);
+                        sessionStorage.setItem("employeeDepartment", response.data[0][0].department);
+                        sessionStorage.setItem("employeePosition", response.data[0][0].position);
+                        sessionStorage.setItem("employeeEmail", response.data[0][0].email);
                         navigate('/dashboard');    
         }).catch(error => { // IF USERNAME IS NOT FOUND
             document.querySelector(".warning").style.visibility = "visible";
@@ -45,8 +47,8 @@ export function Login() {
     return <>
             <form className="ls-form" onSubmit={(e)=>{HandleLogIn(e)}}>
             {/* handling for form when user submits on sign in or log in */} 
-                <label htmlFor="employeeID">Employee ID:</label>
-                <input type="text" id="employeeID" name="employeeID" value={employeeID} onChange={e => setEmployeeID(e.target.value)} maxLength={15} /><br/>
+                <label htmlFor="employeeID">Employee Email:</label>
+                <input type="text" id="employeeEmail" name="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={15} /><br/>
                 <label htmlFor="employeePass">Password:</label>
                 <input type="password" id="employeePass" name="employeePass" value={password} onChange={e => setPassword(e.target.value)} maxLength={15} /><br />
                 <p className="warning">The Information Provided Does Not Match Our Records</p>

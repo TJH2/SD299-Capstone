@@ -3,9 +3,9 @@ const db = require("./database");
 /* EMPLOYEE CRUD */
 
 // CREATE EMPLOYEE
-const createEmployee = (name, password, department, position, email, callback) => {
-    const sql = `INSERT INTO employees (name, password, department, position, email) VALUES (?, ?, ?, ?, ?)`
-    db.run(sql, [name, password, department, position, email], function(err) {
+const createEmployee = (email, name, password, department, position, callback) => {
+    const sql = `INSERT INTO employees (email, name, password, department, position) VALUES (?, ?, ?, ?, ?)`
+    db.run(sql, [email, name, password, department, position], function(err) {
         callback(err, {id: this.lastID})
     })
 }
@@ -17,16 +17,29 @@ const readEmployees = (callback) => {
 }
 
 // FIND SPECIFIC EMPLOYEE FOR LOGGING IN
-const findEmployee = (id, password, callback) => {
-    const sql = `SELECT * FROM employees WHERE id = ? AND password = ?`;
-    db.all(sql, [id, password], callback)
+const findEmployee = (email, password, callback) => {
+    const sql = `SELECT * FROM employees WHERE email = ? AND password = ?`;
+    db.all(sql, [email, password], callback)
+}
+
+// DELETE EMPLOYEE
+
+const deleteEmployee = (email, callback) => {
+    const sql = `DELETE FROM employees WHERE email = ?`
+    db.run(sql, email, callback)
 }
 
 
 /* FORM CRUD */
 
+// READ ALL REQUESTS
+const readRequests = (callback) => {
+    const sql = `SELECT * FROM forms`;
+    db.all(sql, [], callback)
+}
+
 // CREATE INITIAL FORM
-const createForm = (request_type, asset, location, priority, deadline, request_description, employee, employee_contact) => {
+const createRequest = (request_type, asset, location, priority, deadline, request_description, employee, employee_contact, callback) => {
     const sql = `INSERT INTO forms (request_type, asset, location, priority, deadline, request_description, employee, employee_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     db.run(sql, [request_type, asset, location, priority, deadline, request_description, employee, employee_contact], function(err) {
         callback(err, {id: this.lastID})
@@ -34,15 +47,15 @@ const createForm = (request_type, asset, location, priority, deadline, request_d
 }
 
 // MANAGER ASSIGNING FORM TO MAINTENANCE WORKER
-const assignForm = (id, assigned, assigned_contact, callback) => {
+const assignRequest = (id, assigned, assigned_contact, callback) => {
     const sql = `UPDATE forms SET assigned = ?, assigned_conact = ? WHERE id = ?`
     db.run(sql, [assigned, assigned_contact, id], callback )
 }
 
 // DELETE FORM
-const deleteForm = (id, callback) => {
+const deleteRequest = (id, callback) => {
     const sql = `DELETE FROM forms WHERE id = ?`
     db.run(sql, id, callback)
 }
 
-module.exports = {createEmployee, findEmployee, readEmployees, createForm, assignForm, deleteForm}
+module.exports = { readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, deleteRequest }

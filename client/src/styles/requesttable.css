@@ -1,0 +1,10 @@
+table, th, td {
+    border: 2px black solid;
+    text-align: center;
+    border-collapse: collapse;
+    padding: 5px;
+}
+
+.request-description {
+text-align: left;
+}

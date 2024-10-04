@@ -13,7 +13,7 @@ function App() {
 
         <header>
             <h1>Centurión Maintenance</h1>
-            {useLocation().pathname === "/dashboard" ? <Link to="#" onClick={() => {sessionStorage.removeItem("name"); sessionStorage.removeItem("position"); navigate('/');}}>Log Out</Link> : ""}
+            {useLocation().pathname === "/dashboard" ? <Link to="#" onClick={() => {sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link> : ""}
             {/* ONLY SHOWS LOG OUT LINK IF USER IS ON DASHBOARD PAGE */}
         </header> 
 
@@ -30,7 +30,7 @@ function App() {
 
 // FUNCTION FOR PRIVATE ROUTES. HOMEPAGE IS A PRIVATE ROUTE AND ISN'T AVAILABLE UNTIL A USER LOGS IN. ENSURES USERS DON'T MANUALLY PUT HOMEPAGE INTO THE SEARCH BAR
 const PrivateRoutes = () => {
-  const employee = sessionStorage.getItem("name"); // CHECKS SESSION STORAGE FOR EMPLOYEE INFORMATION
+  const employee = sessionStorage.getItem("employeeName"); // CHECKS SESSION STORAGE FOR EMPLOYEE INFORMATION
   return (
       employee ? <Outlet /> : <Navigate to="/" />
   );
