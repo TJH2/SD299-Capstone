@@ -85,8 +85,8 @@ app.delete("/request/:id", (request, response) => {
 
 // CREATE NEW FORM REQUEST.
 app.post('/new-request', (request, response) => {
-    const {request_type, asset, location, priority, deadline, request_description, employee, employee_contact} = request.body;
-    createRequest(request_type, asset, location, priority, deadline, request_description, employee, employee_contact, (err, data) => {
+    const {request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department} = request.body;
+    createRequest(request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department, (err, data) => {
         if(err){
             response.status(500).send(err.message)
         } else {

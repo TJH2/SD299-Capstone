@@ -16,7 +16,8 @@ export function Dashboard() {
     const [requestDescription, setRequestDescription] = useState("");
 
     // REQUEST TABLE
-    const [requests, setRequests] = useState([]); // USESTATE ARRAY FOR ENTRIES FROM DATABASE
+    const [requests, setRequests] = useState([]); // USESTATE ARRAY ALL REQUESTS IN THE DATABASE
+    const [filteredRequests, setFilteredRequests] = useState([]); // USESTATE ARRAY FOR FILTERED REQUESTS
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
 
     // TOGGLES
@@ -34,9 +35,8 @@ export function Dashboard() {
                 response => {
                     response.data.forEach(currentRequest => {
                         // ADDS REQUESTS TO REQUEST USESTATE
-                        console.log(currentRequest);
-                            setRequests((requests) => {
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                        setRequests((requests) => {
+                            return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                         });
                     });
                 }
@@ -44,6 +44,16 @@ export function Dashboard() {
             })
         }
     }, [])
+
+    const customFilter = (arr, predicate) => {
+        return arr.reduce((acc, item) => {
+            if (predicate(item)) {
+                acc.push(item);
+             }
+            return acc;
+        }, []);
+    };
+        
 
     // FUNCTION FOR SUBMITTING FORM
     function submitForm(e) {
@@ -71,11 +81,12 @@ export function Dashboard() {
             deadline: preferredDate,
             request_description: requestDescription,
             employee: sessionStorage.getItem("employeeName"),
-            employee_contact: sessionStorage.getItem("employeeEmail")
+            employee_contact: sessionStorage.getItem("employeeEmail"),
+            employee_department: sessionStorage.getItem("employeeDepartment")
         }).then(
             response => { // IF FORM IS SUCCESSFULLY SUBMITTED CLEAR FORM
                 // RESETS FORM
-                setRequestType("maintenance");
+                setRequestType("Maintenance");
                 setLocation("");
                 setAssetDescription("");
                 setPriority("low");
@@ -89,11 +100,11 @@ export function Dashboard() {
                 // PULLS ALL REQUESTS FROM DATABASE
                 axios.get('http://localhost:3000/requests').then(
                     response => {
+                        setRequests([]);
                         response.data.forEach(currentRequest => {
-                        // ADDS REQUESTS TO REQUEST USESTATE
-                        console.log(currentRequest);
+                            // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => {
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                         });
                     }
@@ -111,9 +122,54 @@ export function Dashboard() {
 
     return <>
         <h2>Welcome, {sessionStorage.getItem("employeeName")}</h2>
-        <h2>Submit a Work Order Request <Link to="#" onClick={() => { setIsFormToggled(!isFormToggled); }}>[+]</Link></h2> 
+        <nav>
+            <ul>
+                <li><Link to="#" onClick={() => { setIsTableToggled(false); setIsFormToggled(!isFormToggled); }}>Make A Work Order Request</Link></li>
+
+                { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
+                <li><Link to="#" onClick={() => { 
+                    setIsFormToggled(false);
+                    setIsTableToggled(true); setFilteredRequests(customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"))); 
+                }}>Your Work Order Requests</Link></li> 
+                }
+
+                { // NORMAL MANAGERS CAN SEE ALL THEIR DEPARTMENT WORK ORDER REQUESTS
+                sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link to="#" onClick={() => { 
+                    setIsFormToggled(false);
+                    setIsTableToggled(true);
+                    setFilteredRequests(customFilter(requests, request => request.employee_department === sessionStorage.getItem("employeeDepartment")));
+                }}>{ sessionStorage.getItem("employeeDepartment") 
+                    } Department Work Order Requests</Link></li> : "" 
+                }
+
+                { // NORMAL IT/MAINTENANCE EMPLOYEES CAN SEE REQUESTS ASSIGNED TO THEM
+                sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
+                    setIsFormToggled(false);
+                    setIsTableToggled(true);
+                    setFilteredRequests(customFilter(requests, request => request.assigned === sessionStorage.getItem("employeeName")));
+                }}>Assigned Work Order Requests</Link></li> : "" 
+                }
+
+                { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
+                sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
+                    setIsFormToggled(false); 
+                    setIsTableToggled(true); 
+                    setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned === "Unassigned"));
+                }}> Unassigned { sessionStorage.getItem("employeeDepartment") } Work Order Requests</Link></li> : "" 
+                }
+
+                { // IT/MAINTENANCE MANAGERS CAN ONLY SEE ASSIGNED IT OR MAINTENANCE REQUESTS
+                sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
+                    setIsFormToggled(false); 
+                    setIsTableToggled(true);
+                    setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned !== "Unassigned"));
+                }}>Assigned { sessionStorage.getItem("employeeDepartment") } Work Order Requests</Link></li> : "" 
+                }
 
 
+                <li><Link to="#" onClick={() => {sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link></li>
+            </ul>
+        </nav>
 
             { isFormToggled ? 
                 
@@ -181,8 +237,8 @@ export function Dashboard() {
             
             : null }
 
-<h2>View Work Order Requests <Link to="#" onClick={() => { setIsTableToggled(!isTableToggled); }}>[+]</Link></h2>
-        { isTableToggled ?
+
+        { isTableToggled && filteredRequests.length > 0 ?
 
         <table style={{border: "2px black solid"}}>
             <thead>
@@ -198,7 +254,7 @@ export function Dashboard() {
                     <th>Status</th>
                 </tr>
             </thead>
-            {requests.toReversed().map((request) => {
+            {filteredRequests.toReversed().map((request) => {
                 return (
                     <tbody key={request.id} style={{border: "2px black solid"}}>
                         <tr>
@@ -220,5 +276,8 @@ export function Dashboard() {
             })}
         </table>
         : null }
+
+        { isTableToggled && filteredRequests.length === 0 ? <h2>There Are No Work Order Requests of This Type to Show</h2> : null }
+
     </>
    }

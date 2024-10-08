@@ -1,14 +1,14 @@
 SALES
 Sales Manager: sm@test.com//123
-Salesman One: so@test.com//123
-Salesman Two: st@test.com//123
+Salesman Employee1: s1@test.com//123
+Salesman Employee2: s2@test.com//123
 
 MAINTENANCE
 Maintenance Manager: mm@test.com//123
-Maintenance One: mo@test.com//123
-Maintenance Two: mt@test.com//123
+Maintenance Employee1: m1@test.com//123
+Maintenance Employee2: m2@test.com//123
 
 IT
 IT Manager: im@test.com//123
-IT One: io@test.com//123
-IT Two: it@test.com//123
+IT Employee1: i1@test.com//123
+IT Employee2: i2@test.com//123

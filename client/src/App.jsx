@@ -6,15 +6,11 @@ import "./styles/styles.css"; // STYLE FOR ENTIRE WEBSITE
 
 function App() {
 
-  const navigate = useNavigate(); // "react-router-dom" VARIABLE TO NAVIGATE BETWEEN PAGES
-
   return (
     <>
 
         <header>
             <h1>Centurión Maintenance</h1>
-            {useLocation().pathname === "/dashboard" ? <Link to="#" onClick={() => {sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link> : ""}
-            {/* ONLY SHOWS LOG OUT LINK IF USER IS ON DASHBOARD PAGE */}
         </header> 
 
       <Routes>

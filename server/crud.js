@@ -39,9 +39,9 @@ const readRequests = (callback) => {
 }
 
 // CREATE INITIAL FORM
-const createRequest = (request_type, asset, location, priority, deadline, request_description, employee, employee_contact, callback) => {
-    const sql = `INSERT INTO forms (request_type, asset, location, priority, deadline, request_description, employee, employee_contact) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    db.run(sql, [request_type, asset, location, priority, deadline, request_description, employee, employee_contact], function(err) {
+const createRequest = (request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department, callback) => {
+    const sql = `INSERT INTO forms (request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    db.run(sql, [request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department], function(err) {
         callback(err, {id: this.lastID})
     })
 }
