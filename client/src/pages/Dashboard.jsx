@@ -7,6 +7,9 @@ import "../styles/requesttable.css"; // CSS FOR WORKORDER FORM
 
 export function Dashboard() {
 
+    // FOR NAVIGATION
+    const navigate = useNavigate(); // "react-router-dom" VARIABLE TO NAVIGATE BETWEEN PAGES
+
     // WORK ORDER REQUEST FORM
     const [requestType, setRequestType] = useState("Maintenance");
     const [location, setLocation] = useState("");
@@ -18,11 +21,14 @@ export function Dashboard() {
     // REQUEST TABLE
     const [requests, setRequests] = useState([]); // USESTATE ARRAY ALL REQUESTS IN THE DATABASE
     const [filteredRequests, setFilteredRequests] = useState([]); // USESTATE ARRAY FOR FILTERED REQUESTS
+    const [requestDetails, setRequestDetails] = useState([]); // USE STATE FOR REQUEST DETAILS
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
 
     // TOGGLES
     const [isFormToggled, setIsFormToggled] = useState(false);
-    const [isTableToggled, setIsTableToggled] = useState(false);
+    const [isPersonalToggled, setIsPersonalToggled] = useState(false); // PERSONAL VIEW FOR USER'S REQUESTS
+    const [isNormalToggled, setIsNormalToggled] = useState(false); // NORMAL VIEW FOR MANAGERS/TECHNICIANS
+    const [isDetailToggled, setIsDetailToggled] = useState(false); // DETAILED VIEW FOR USERS
 
     // POPULATES REQUEST TABLE
     useEffect(() => {
@@ -54,6 +60,16 @@ export function Dashboard() {
         }, []);
     };
         
+
+    // FUNCTION FOR VIEWING FORM DETAILS
+    function openDetails(e, id) {
+        e.preventDefault();
+        setRequestDetails(customFilter(requests, request => request.id === id)[0]);
+        setIsFormToggled(false);
+        setIsPersonalToggled(false);
+        setIsNormalToggled(false);
+        setIsDetailToggled(true); 
+    }
 
     // FUNCTION FOR SUBMITTING FORM
     function submitForm(e) {
@@ -124,19 +140,24 @@ export function Dashboard() {
         <h2>Welcome, {sessionStorage.getItem("employeeName")}</h2>
         <nav>
             <ul>
-                <li><Link to="#" onClick={() => { setIsTableToggled(false); setIsFormToggled(!isFormToggled); }}>Make A Work Order Request</Link></li>
+                <li><Link to="#" onClick={() => { setIsNormalToggled(false); setIsFormToggled(true); }}>Make A Work Order Request</Link></li>
 
                 { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
                 <li><Link to="#" onClick={() => { 
                     setIsFormToggled(false);
-                    setIsTableToggled(true); setFilteredRequests(customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"))); 
+                    setIsNormalToggled(false);
+                    setIsDetailToggled(false);
+                    setIsPersonalToggled(true); 
+                    setFilteredRequests(customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"))); 
                 }}>Your Work Order Requests</Link></li> 
                 }
 
                 { // NORMAL MANAGERS CAN SEE ALL THEIR DEPARTMENT WORK ORDER REQUESTS
                 sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link to="#" onClick={() => { 
                     setIsFormToggled(false);
-                    setIsTableToggled(true);
+                    setIsPersonalToggled(false);
+                    setIsDetailToggled(false); 
+                    setIsNormalToggled(true);
                     setFilteredRequests(customFilter(requests, request => request.employee_department === sessionStorage.getItem("employeeDepartment")));
                 }}>{ sessionStorage.getItem("employeeDepartment") 
                     } Department Work Order Requests</Link></li> : "" 
@@ -145,31 +166,42 @@ export function Dashboard() {
                 { // NORMAL IT/MAINTENANCE EMPLOYEES CAN SEE REQUESTS ASSIGNED TO THEM
                 sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
                     setIsFormToggled(false);
-                    setIsTableToggled(true);
+                    setIsPersonalToggled(false);
+                    setIsDetailToggled(false); 
+                    setIsNormalToggled(true);
                     setFilteredRequests(customFilter(requests, request => request.assigned === sessionStorage.getItem("employeeName")));
                 }}>Assigned Work Order Requests</Link></li> : "" 
                 }
 
                 { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
                 sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false); 
-                    setIsTableToggled(true); 
+                    setIsFormToggled(false);
+                    setIsPersonalToggled(false);
+                    setIsDetailToggled(false);  
+                    setIsNormalToggled(true); 
                     setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned === "Unassigned"));
                 }}> Unassigned { sessionStorage.getItem("employeeDepartment") } Work Order Requests</Link></li> : "" 
                 }
 
                 { // IT/MAINTENANCE MANAGERS CAN ONLY SEE ASSIGNED IT OR MAINTENANCE REQUESTS
                 sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false); 
-                    setIsTableToggled(true);
+                    setIsFormToggled(false);
+                    setIsPersonalToggled(false);
+                    setIsDetailToggled(false);  
+                    setIsNormalToggled(true);
                     setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned !== "Unassigned"));
                 }}>Assigned { sessionStorage.getItem("employeeDepartment") } Work Order Requests</Link></li> : "" 
                 }
 
 
-                <li><Link to="#" onClick={() => {sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link></li>
+                <li><Link to="#" onClick={(e) => { e.preventDefault(e); sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link></li>
             </ul>
         </nav>
+
+
+            {
+                // FORM SUBMISSION VIEW ---------------------------------------------------------------------------------------------------------
+            }
 
             { isFormToggled ? 
                 
@@ -238,46 +270,132 @@ export function Dashboard() {
             : null }
 
 
-        { isTableToggled && filteredRequests.length > 0 ?
+{
+    // PERSONAL VIEW ---------------------------------------------------------------------------------
+}
 
-        <table style={{border: "2px black solid"}}>
-            <thead>
-                <tr>
-                    <th>Request Type</th>
-                    <th>Asset</th>
-                    <th>Requester</th>
-                    <th>Email</th>
-                    <th>Assigned</th>
-                    <th>Email</th>
-                    <th>Preferred Deadline</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
+
+        { isPersonalToggled && filteredRequests.length > 0 ?
+
+                <div className="grid">
+                    <h2>My Requests</h2>
+                    <div className="head">
+                        <p>Assigned To</p>
+                        <p>Description</p>
+                        <p>Priority</p>
+                        <p>Created On</p>
+                        <p>Location</p>
+                        <p></p>
+                    </div>
             {filteredRequests.toReversed().map((request) => {
                 return (
-                    <tbody key={request.id} style={{border: "2px black solid"}}>
-                        <tr>
-                            <td>{request.request_type}</td>
-                            <td>{request.asset}</td>
-                            <td>{request.employee}</td>
-                            <td>{request.employee_contact}</td>
-                            <td>{request.assigned }</td>
-                            <td>{request.assigned_contact }</td>
-                            <td>{request.deadline }</td> 
-                            <td>{request.priority }</td>
-                            <td>{request.status }</td>
-                        </tr>
-                        <tr>
-                            <td colSpan={9} className="request-description"><strong>Description: </strong>{request.request_description}</td>
-                        </tr>
-                    </tbody>
+                    <div className="body" key={request.id}>
+                        { request.assigned === "Unassigned" ? <p style={{color: "gold"}}>Pending</p>: <p>{request.assigned}</p>}
+                        <p>{request.request_description}</p>
+                        {(()=>{
+                            if(request.priority === "Low"){
+                                return (
+                                    <p style={{color: "green", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            } else if(request.priority === "Medium"){
+                                return (
+                                    <p style={{color: "yellow", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            } else if(request.priority === "High") {
+                                return (
+                                    <p style={{color: "coral", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            } else{
+                                return (
+                                    <p style={{color: "red", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            }
+
+                        })()}
+                        <p>{request.deadline }</p>
+                        <p>{request.location }</p> 
+                        <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
+                    </div>
                 );
             })}
-        </table>
+        </div>
         : null }
 
-        { isTableToggled && filteredRequests.length === 0 ? <h2>There Are No Work Order Requests of This Type to Show</h2> : null }
+        { isPersonalToggled && filteredRequests.length === 0 ? <h2>There Are No Work Order Requests of This Type to Show</h2> : null }
+
+
+{
+    // NORMAL VIEW ---------------------------------------------------------------------------------
+}
+
+
+        { isNormalToggled && filteredRequests.length > 0 ?
+
+                <div className="grid">
+                    <h2>Work Order Requests</h2>
+                    <div className="head">
+                        <p>Created By</p>
+                        <p>Description</p>
+                        <p>Priority</p>
+                        <p>Created On</p>
+                        <p>Location</p>
+                        <p></p>
+                    </div>
+            {filteredRequests.toReversed().map((request) => {
+                return (
+                    <div className="body" key={request.id}>
+                        <p>{request.employee}</p>
+                        <p>{request.request_description}</p>
+                        {(()=>{
+                            if(request.priority === "Low"){
+                                return (
+                                    <p style={{color: "green", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            } else if(request.priority === "Medium"){
+                                return (
+                                    <p style={{color: "yellow", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            } else if(request.priority === "High") {
+                                return (
+                                    <p style={{color: "coral", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            } else{
+                                return (
+                                    <p style={{color: "red", fontWeight: "bold"}}>{request.priority}</p>
+                                )
+                            }
+
+                        })()}
+                        <p>{request.deadline }</p>
+                        <p>{request.location }</p> 
+                        <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
+                    </div>
+                );
+            })}
+        </div>
+        : null }
+
+        { isNormalToggled && filteredRequests.length === 0 ? <h2>There Are No Work Order Requests of This Type to Show</h2> : null }
+
+        {
+            // DETAILED VIEW
+        }
+
+        { isDetailToggled ?
+            <div className="details">
+                <h2>Work Order Details</h2>
+                <button>Update</button>
+                <button>Delete</button>
+                <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
+                <p><strong>Status:</strong> {requestDetails.status}</p>
+                <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
+                <p><strong>Technician Update:</strong></p>
+                <textarea value={requestDetails.update}></textarea>
+                <p><strong>Created By:</strong> {requestDetails.employee} <strong>Contact Info:</strong> {requestDetails.employee_contact}</p>
+                <p><strong>Task Priority:</strong> {requestDetails.priority}</p>
+                <p><strong>Assigned To:</strong> {requestDetails.assigned} <strong>Contact Info:</strong> {requestDetails.assigned_contact}</p>
+            </div>
+        : null }
 
     </>
    }
