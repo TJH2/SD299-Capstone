@@ -2,6 +2,7 @@ SALES
 Sales Manager: sm@test.com//123
 Salesman Employee1: s1@test.com//123
 Salesman Employee2: s2@test.com//123
+Jake Holmes: jh@test.com//123
 
 MAINTENANCE
 Maintenance Manager: mm@test.com//123

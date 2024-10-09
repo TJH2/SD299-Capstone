@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Route, Routes, Outlet, Navigate, Link, useNavigate, useLocation } from "react-router-dom";
 import { Login } from "./pages/Login.jsx"; // LOG IN COMPONENT
 import { Dashboard } from "./pages/Dashboard.jsx"; // EMPLOYEE DASHBOARD COMPONENT
-import "./styles/styles.css"; // STYLE FOR ENTIRE WEBSITE
+import "./styles.css"; // STYLE FOR ENTIRE WEBSITE
 
 function App() {
 

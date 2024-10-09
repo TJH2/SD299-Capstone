@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Route, Routes, Outlet, Navigate, Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios"
-import "../styles/dashboard.css"; // STYLING FOR DASHBOARD PAGE
-import "../styles/workorder.css"; // CSS FOR WORKORDER FORM
-import "../styles/requesttable.css"; // CSS FOR WORKORDER FORM
 
 export function Dashboard() {
 
@@ -140,7 +137,11 @@ export function Dashboard() {
         <h2>Welcome, {sessionStorage.getItem("employeeName")}</h2>
         <nav>
             <ul>
-                <li><Link to="#" onClick={() => { setIsNormalToggled(false); setIsFormToggled(true); }}>Make A Work Order Request</Link></li>
+                <li><Link to="#" onClick={() => { 
+                    setIsNormalToggled(false);
+                    setIsDetailToggled(false);
+                    setIsPersonalToggled(false); 
+                    setIsFormToggled(true); }}>Make A Work Order Request</Link></li>
 
                 { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
                 <li><Link to="#" onClick={() => { 
