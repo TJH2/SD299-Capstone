@@ -19,6 +19,8 @@ export function Dashboard() {
     const [requests, setRequests] = useState([]); // USESTATE ARRAY ALL REQUESTS IN THE DATABASE
     const [filteredRequests, setFilteredRequests] = useState([]); // USESTATE ARRAY FOR FILTERED REQUESTS
     const [requestDetails, setRequestDetails] = useState([]); // USE STATE FOR REQUEST DETAILS
+    const [technicians, setTechnicians] = useState([]); // ARRAY TO HOLD MAINTENANCE/IT TECHNICIANS
+    
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
 
     // TOGGLES
@@ -26,6 +28,14 @@ export function Dashboard() {
     const [isPersonalToggled, setIsPersonalToggled] = useState(false); // PERSONAL VIEW FOR USER'S REQUESTS
     const [isNormalToggled, setIsNormalToggled] = useState(false); // NORMAL VIEW FOR MANAGERS/TECHNICIANS
     const [isDetailToggled, setIsDetailToggled] = useState(false); // DETAILED VIEW FOR USERS
+
+    // FORM WARNING
+    const [warningMessage, setWarningMessage] = useState("");
+
+    // CLEARS THE FORM WARNING 
+    useEffect(() => {
+        if(isFormToggled) setWarningMessage("")
+    }, [isFormToggled])
 
     // POPULATES REQUEST TABLE
     useEffect(() => {
@@ -45,6 +55,25 @@ export function Dashboard() {
                 }
             ).catch(error => {
             })
+
+            // FILLS TECHNICIAN ARRAYS IF IT/MAINTENANCE MANAGER ACCOUNT
+            console.log("MADE IT");
+            if(sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "Maintenance" || sessionStorage.getItem("employeeDepartment") === "IT")) {
+                // PULLS ALL REQUESTS FROM DATABASE
+                    axios.get('http://localhost:3000/employees').then(
+                        response => {
+                            response.data.forEach(currentEmployee => {
+                            // ADDS REQUESTS TO REQUEST USESTATE
+                            if(currentTechnician.department === sessionStorage.getItem("employeeDepartment")) {
+                                setTechnicians((employees) => {
+                                    return [...employees, { name: currentEmployee.name, contact: currentRequest.email }];
+                                });
+                            }
+                        });
+                    }
+                ).catch(error => {
+                })
+            }
         }
     }, [])
 
@@ -73,8 +102,7 @@ export function Dashboard() {
         e.preventDefault();
 
         if(location === "" || assetDescription === "" || preferredDate === "" || requestDescription === "") {
-            document.querySelector(".warning").style.visibility = "visible";
-            document.querySelector("#form-warning").innerText = "Please Fill Out All Fields";
+            setWarningMessage("Please Fill Out All Fields");
             return;
         }
 
@@ -107,7 +135,7 @@ export function Dashboard() {
                 setPreferredDate("");
                 setRequestDescription("");
 
-                document.querySelector(".warning").style.visibility = "hidden";
+                setWarningMessage("");
                 setIsFormToggled(false);
 
                 // PULLS ALL REQUESTS FROM DATABASE
@@ -126,8 +154,7 @@ export function Dashboard() {
 
                 return;
         }).catch(error => { // IF FORM IS NOT SUCCESSFULLY SUBMITTED
-            document.querySelector(".warning").style.visibility = "visible";
-            document.querySelector("#form-warning").innerText = "Form Submission Error: Please Try Again"
+            setWarningMessage("Form Submission Error: Please Try Again");
             return;
         })
     }
@@ -262,9 +289,7 @@ export function Dashboard() {
                     <label htmlFor="request-description">Describe Your Request</label>
                     <textarea id="request-description" name="request-description" rows="5" placeholder="Describe the work that needs to be completed" value={requestDescription} onChange={e => setRequestDescription(e.target.value)}></textarea>
                 </div>
-
-                <p id="form-warning" className="warning" >Please Fill Out All Fields</p>
-                
+                { warningMessage && <p id="form-warning" className="warning"> {warningMessage}</p> }
                 <button>Submit</button>
             </form> 
             
@@ -384,17 +409,40 @@ export function Dashboard() {
 
         { isDetailToggled ?
             <div className="details">
+                {console.log(technicians)}
                 <h2>Work Order Details</h2>
                 <button>Update</button>
                 <button>Delete</button>
                 <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
-                <p><strong>Status:</strong> {requestDetails.status}</p>
+                { // ASSIGNED TECHNICIANS AND CHANGE THE STATUS OF WORK ORDER REQUESTS FROM ASSIGNED -> IN PROGRESS -> COMPLETE
+                    requestDetails.assigned === sessionStorage.getItem("employeeName") ? 
+                    <select defaultValue={requestDetails.status}>
+                        <option value="Assigned">Assigned</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Complete">Complete</option>
+                    </select> : <p>{requestDetails.status}</p>
+                }
                 <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
                 <p><strong>Technician Update:</strong></p>
-                <textarea value={requestDetails.update}></textarea>
+                { // THE ASSIGNED TECHNICIAN AND WRITE UPDATES TO WORK ORDERS, AND EVERYONE ELSE CAN JUST READ THE UPDATES
+                    requestDetails.assigned === sessionStorage.getItem("employeeName") ? <textarea value={requestDetails.update}></textarea> : <p>{requestDetails.update}</p>
+                }
                 <p><strong>Created By:</strong> {requestDetails.employee} <strong>Contact Info:</strong> {requestDetails.employee_contact}</p>
                 <p><strong>Task Priority:</strong> {requestDetails.priority}</p>
-                <p><strong>Assigned To:</strong> {requestDetails.assigned} <strong>Contact Info:</strong> {requestDetails.assigned_contact}</p>
+                <p><strong>Assigned To:</strong></p>
+                {   // MANAGERS OF MAINTENANCE AND IT DEPARTMENTS CAN ASSIGN TASKS TO THEIR TECHNICIANS
+                    sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") === requestDetails.request_type ? 
+                    <select defaultValue={requestDetails.assigned}>
+                        <option value="Unassigned">Unassigned</option>
+                        {technicians.map((techs) => {
+                        return (
+                            <option key={techs.email} value={technicians.name}>{techs.name}</option>
+                        );
+                        })}
+                    </select>: <p>{requestDetails.assigned}</p>
+                } 
+                <p><strong>Contact Info:</strong></p> 
+                <p>{requestDetails.assigned_contact}</p>
             </div>
         : null }
 

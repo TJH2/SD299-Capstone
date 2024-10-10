@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Route, Routes, Outlet, Navigate, Link, useNavigate, useLocation } from "react-router-dom";
 import axios from "axios"
+import '../styles-login.css'
 
 export function Login() {
 
@@ -13,6 +14,8 @@ export function Login() {
     const [employeeName, setEmployeeName] = useState("");
     const [employeeDepartment, setEmployeeDepartment] = useState("");
     const [employeePosition, setEmployeePosition] = useState("Employee");
+    
+    const [warningMessage, setWarningMessage] = useState("")
 
     useEffect(() => { // PREVENTS USER FROM GOING BACK TO LOGGIN PAGE IF ALREADY LOGGED IN
         if (!initialized.current) { // MAKES SURE USEFFECT TRIGGERS ONLY ONCE
@@ -34,15 +37,15 @@ export function Login() {
             } 
         }).then(
             response => {
+                        setWarningMessage("");
                         console.log(response.data[0][0]);
-                        document.querySelector(".warning").style.visibility = "hidden";
                         sessionStorage.setItem("employeeName", response.data[0][0].name);
                         sessionStorage.setItem("employeeDepartment", response.data[0][0].department);
                         sessionStorage.setItem("employeePosition", response.data[0][0].position);
                         sessionStorage.setItem("employeeEmail", response.data[0][0].email);
                         navigate('/dashboard');    
         }).catch(error => { // IF USERNAME IS NOT FOUND
-            document.querySelector(".warning").style.visibility = "visible";
+            setWarningMessage("The Information Provided Does Not Match Our Records")
             setPassword("");
             return;
         })
@@ -58,53 +61,74 @@ export function Login() {
             position: employeePosition
         }).then(
             response => {
+                        setWarningMessage("")
                         console.log(response.data[0][0]);
-                        document.querySelector(".warning").style.visibility = "hidden";
                         sessionStorage.setItem("employeeName", employeeName);
                         sessionStorage.setItem("employeeDepartment", employeeDepartment);
                         sessionStorage.setItem("employeePosition", employeePosition);
                         sessionStorage.setItem("employeeEmail", employeeEmail);
                         navigate('/dashboard');    
         }).catch(error => { // IF USERNAME IS NOT FOUND
-            document.querySelector(".warning").style.visibility = "visible";
+            setWarningMessage("There Was An Unexpected Error Creating This Account")
             return;
         })
-
     }
 
-    return <>
+    function handleFormChange(bool) {
+        if (warningMessage) setWarningMessage("");
+        setIsLog(bool)
+    }
 
+    return <div className="login-container">
+        
+        <img src="./public/logo.png"/>
+        <h1>Centurion Work Orders</h1>
         { isLog ? 
-            <form className="ls-form" onSubmit={(e)=>{HandleLogIn(e)}}>
-                <h2>Log In Or <Link to="#" onClick={()=>{setIsLog(false)}}>Create Account</Link></h2>
-                {/* handling for form when user submits on sign in or log in */} 
-                <label htmlFor="employeeEmail">Employee Email:</label>
-                <input type="text" id="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={15} /><br/>
-                <label htmlFor="employeePass">Password:</label>
+            <form className="form" onSubmit={(e)=>{HandleLogIn(e)}}>
+                <h2>Log In Or <Link to="#" onClick={()=>{handleFormChange(false)}}>Create Account</Link></h2>
+                {/* handling for form when user submits on sign in or log in */}
+                <div className="form-control">
+                  <label htmlFor="employeeEmail">Employee Email</label>
+                  <input type="text" id="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={15} />
+                </div>
+                <div className="form-control">
+                <label htmlFor="employeePass">Password</label>
                 <input type="password" id="employeePass" value={password} onChange={e => setPassword(e.target.value)} maxLength={15} />
-                <p className="warning">The Information Provided Does Not Match Our Records</p>
+                </div>
+                { warningMessage && <p className="warning"> {warningMessage}</p> }
+                
                 <button>Log In</button>
             </form>
         : 
-            <form className="ls-form" onSubmit={(e)=>{HandleCreate(e)}}>
-                <h2><Link to="#" onClick={()=>{setIsLog(true)}}>Log In</Link> Or Create Account</h2>
+            <form className="form" onSubmit={(e)=>{HandleCreate(e)}}>
+                <h2><Link to="#" onClick={()=>{handleFormChange(true)}}>Log In</Link> Or Create Account</h2>
                 {/* handling for form when user submits on sign in or log in */}
-                <label htmlFor="employeeName">Employee Name:</label>
-                <input type="text" id="employeeName" value={employeeName} onChange={e => setEmployeeName(e.target.value)} maxLength={15} /><br/> 
-                <label htmlFor="employeeEmail">Employee Email:</label>
-                <input type="text" id="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={15} /><br/>
-                <label htmlFor="employeePass">Password:</label>
-                <input type="password" id="employeePass" value={password} onChange={e => setPassword(e.target.value)} maxLength={15} /><br />
-                <label htmlFor="employeeDepartment">Department:</label>
-                <input type="text" id="employeeDepartment" value={employeeDepartment} onChange={e => setEmployeeDepartment(e.target.value)} maxLength={15} /><br/>
-                <label htmlFor="employeePosition">Position:</label>
+                <div className="form-control">
+                  <label htmlFor="employeeName">Employee Name</label>
+                  <input type="text" id="employeeName" value={employeeName} onChange={e => setEmployeeName(e.target.value)} maxLength={15} />
+                </div>
+                <div className="form-control">
+                  <label htmlFor="employeeEmail">Employee Email</label>
+                  <input type="text" id="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={15} />
+                </div>
+                <div className="form-control">
+                  <label htmlFor="employeePass">Password</label>
+                  <input type="password" id="employeePass" value={password} onChange={e => setPassword(e.target.value)} maxLength={15} />
+                </div>
+                <div className="form-control">
+                  <label htmlFor="employeeDepartment">Department</label>
+                  <input type="text" id="employeeDepartment" value={employeeDepartment} onChange={e => setEmployeeDepartment(e.target.value)} maxLength={15} />
+                </div>
+                <div className="form-control">
+                <label htmlFor="employeePosition">Position</label>
                 <select id="employeePosition" value={employeePosition} onChange={e => setEmployeePosition(e.target.value)}>
                     <option value="Employee">Employee</option>
                     <option value="Manager">Manager</option>
-                </select>
-                <p className="warning">There Was An Unexpected Error Creating This Employee</p>
+                </select>  
+                </div> 
+                { warningMessage && <p className="warning"> {warningMessage}</p> }
                 <button>Create Employee</button>
             </form> 
             }
-    </>
+    </div>
    }
