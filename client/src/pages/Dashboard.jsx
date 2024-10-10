@@ -57,16 +57,15 @@ export function Dashboard() {
             })
 
             // FILLS TECHNICIAN ARRAYS IF IT/MAINTENANCE MANAGER ACCOUNT
-            console.log("MADE IT");
             if(sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "Maintenance" || sessionStorage.getItem("employeeDepartment") === "IT")) {
-                // PULLS ALL REQUESTS FROM DATABASE
+                // PULLS ALL EMPLOYEES FROM DATABASE
                     axios.get('http://localhost:3000/employees').then(
                         response => {
                             response.data.forEach(currentEmployee => {
                             // ADDS REQUESTS TO REQUEST USESTATE
-                            if(currentTechnician.department === sessionStorage.getItem("employeeDepartment")) {
+                            if(currentEmployee.department === sessionStorage.getItem("employeeDepartment") && currentEmployee.position === "Employee") {
                                 setTechnicians((employees) => {
-                                    return [...employees, { name: currentEmployee.name, contact: currentRequest.email }];
+                                    return [...employees, { name: currentEmployee.name, contact: currentEmployee.email }];
                                 });
                             }
                         });
@@ -86,6 +85,35 @@ export function Dashboard() {
         }, []);
     };
         
+    // FUNCTION FOR ASSIGNING TECHNICIANS
+    function assignTech(e, name, id) {
+        e.preventDefault();
+        let contact;
+        name === "Unassigned" ? contact = "None" : contact = customFilter(technicians, tech => tech.name === name)[0].contact;
+
+        axios.put(`http://localhost:3000/assign/${id}`,{
+            assigned: name,
+            assigned_contact: contact
+        }).then(
+            response => {
+                // PULLS ALL REQUESTS FROM DATABASE
+                axios.get('http://localhost:3000/requests').then(
+                    response => {
+                        setRequests([]);
+                        response.data.forEach(currentRequest => {
+                            // ADDS REQUESTS TO REQUEST USESTATE
+                            setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                            });
+                            currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
+                        });
+                    }
+                ).catch(error => {
+                })
+        }
+        ).catch(error => {
+        })
+    }
 
     // FUNCTION FOR VIEWING FORM DETAILS
     function openDetails(e, id) {
@@ -151,8 +179,6 @@ export function Dashboard() {
                     }
                 ).catch(error => {
                 })
-
-                return;
         }).catch(error => { // IF FORM IS NOT SUCCESSFULLY SUBMITTED
             setWarningMessage("Form Submission Error: Please Try Again");
             return;
@@ -409,7 +435,6 @@ export function Dashboard() {
 
         { isDetailToggled ?
             <div className="details">
-                {console.log(technicians)}
                 <h2>Work Order Details</h2>
                 <button>Update</button>
                 <button>Delete</button>
@@ -432,14 +457,14 @@ export function Dashboard() {
                 <p><strong>Assigned To:</strong></p>
                 {   // MANAGERS OF MAINTENANCE AND IT DEPARTMENTS CAN ASSIGN TASKS TO THEIR TECHNICIANS
                     sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") === requestDetails.request_type ? 
-                    <select defaultValue={requestDetails.assigned}>
+                    <select defaultValue={requestDetails.assigned} onChange={(e) => {assignTech(e, e.target.value, requestDetails.id)}}>
                         <option value="Unassigned">Unassigned</option>
                         {technicians.map((techs) => {
                         return (
-                            <option key={techs.email} value={technicians.name}>{techs.name}</option>
+                            <option key={techs.contact} value={techs.name}>{techs.name}</option>
                         );
-                        })}
-                    </select>: <p>{requestDetails.assigned}</p>
+                        })} 
+                    </select> : <p>{requestDetails.assigned}</p>
                 } 
                 <p><strong>Contact Info:</strong></p> 
                 <p>{requestDetails.assigned_contact}</p>
