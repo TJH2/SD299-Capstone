@@ -27,6 +27,14 @@ export function Dashboard() {
     const [isNormalToggled, setIsNormalToggled] = useState(false); // NORMAL VIEW FOR MANAGERS/TECHNICIANS
     const [isDetailToggled, setIsDetailToggled] = useState(false); // DETAILED VIEW FOR USERS
 
+    // FORM WARNING
+    const [warningMessage, setWarningMessage] = useState("");
+
+    // CLEARS THE FORM WARNING 
+    useEffect(() => {
+        if(isFormToggled) setWarningMessage("")
+    }, [isFormToggled])
+
     // POPULATES REQUEST TABLE
     useEffect(() => {
 
@@ -73,8 +81,7 @@ export function Dashboard() {
         e.preventDefault();
 
         if(location === "" || assetDescription === "" || preferredDate === "" || requestDescription === "") {
-            document.querySelector(".warning").style.visibility = "visible";
-            document.querySelector("#form-warning").innerText = "Please Fill Out All Fields";
+            setWarningMessage("Please Fill Out All Fields");
             return;
         }
 
@@ -107,7 +114,7 @@ export function Dashboard() {
                 setPreferredDate("");
                 setRequestDescription("");
 
-                document.querySelector(".warning").style.visibility = "hidden";
+                setWarningMessage("");
                 setIsFormToggled(false);
 
                 // PULLS ALL REQUESTS FROM DATABASE
@@ -126,8 +133,7 @@ export function Dashboard() {
 
                 return;
         }).catch(error => { // IF FORM IS NOT SUCCESSFULLY SUBMITTED
-            document.querySelector(".warning").style.visibility = "visible";
-            document.querySelector("#form-warning").innerText = "Form Submission Error: Please Try Again"
+            setWarningMessage("Form Submission Error: Please Try Again");
             return;
         })
     }
@@ -262,9 +268,7 @@ export function Dashboard() {
                     <label htmlFor="request-description">Describe Your Request</label>
                     <textarea id="request-description" name="request-description" rows="5" placeholder="Describe the work that needs to be completed" value={requestDescription} onChange={e => setRequestDescription(e.target.value)}></textarea>
                 </div>
-
-                <p id="form-warning" className="warning" >Please Fill Out All Fields</p>
-                
+                { warningMessage && <p id="form-warning" className="warning"> {warningMessage}</p> }
                 <button>Submit</button>
             </form> 
             
