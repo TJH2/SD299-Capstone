@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const {readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, deleteRequest} = require("./crud");
+const {readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, updateRequest, deleteRequest} = require("./crud");
 const app = express();
 
 app.use(cors());
@@ -104,6 +104,30 @@ app.put('/assign/:id', (request, response) => {
             response.status(500).send(err.message)
         } else {
             response.status(201).send(`WORK ORDER ASSIGNED SUCCESSFULLY`)
+        }
+    })
+})
+
+// TECHNICIAN UPDATE
+app.put('/update/:id', (request, response) => {
+    const { status, request_update } = request.body;
+    
+    updateRequest(request.params.id, status, request_update, (err, data) => {
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(201).send(`WORK ORDER ASSIGNED SUCCESSFULLY`)
+        }
+    })
+})
+
+// DELETE WORK ORDER REQUEST
+app.delete('/delete-request/:id', (request, response) => {
+    deleteRequest(request.params.id, (err)=>{
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(200).send(`DELETED`)
         }
     })
 })

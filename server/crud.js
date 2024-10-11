@@ -55,10 +55,16 @@ const assignRequest = (id, assigned, assigned_contact, callback) => {
     db.run(sql, [assigned, assigned_contact, id], callback )
 }
 
+// TECHNICIAN UPDATING FORM
+const updateRequest = (id, status, request_update, callback) => {
+    const sql = `UPDATE forms SET status = ?, request_update = ? WHERE id = ?`
+    db.run(sql, [status, request_update, id], callback )
+}
+
 // DELETE FORM
 const deleteRequest = (id, callback) => {
     const sql = `DELETE FROM forms WHERE id = ?`
     db.run(sql, id, callback)
 }
 
-module.exports = { readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, deleteRequest }
+module.exports = { readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, updateRequest, deleteRequest }

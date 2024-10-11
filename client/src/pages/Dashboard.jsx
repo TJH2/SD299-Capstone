@@ -20,6 +20,8 @@ export function Dashboard() {
     const [filteredRequests, setFilteredRequests] = useState([]); // USESTATE ARRAY FOR FILTERED REQUESTS
     const [requestDetails, setRequestDetails] = useState([]); // USE STATE FOR REQUEST DETAILS
     const [technicians, setTechnicians] = useState([]); // ARRAY TO HOLD MAINTENANCE/IT TECHNICIANS
+    const [techUpdate, setTechUpdate] = useState("");
+    const [statusUpdate, setStatusUpdate] = useState("");
     
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
 
@@ -115,10 +117,47 @@ export function Dashboard() {
         })
     }
 
+    // FUNCTION FOR TECH UPDATE
+    function tUpdate(e, id) {
+        e.preventDefault();
+
+        axios.put(`http://localhost:3000/update/${id}`,{
+            status: statusUpdate,
+            request_update: techUpdate
+        }).then(
+            response => {
+                // PULLS ALL REQUESTS FROM DATABASE
+                axios.get('http://localhost:3000/requests').then(
+                    response => {
+                        setRequests([]);
+                        response.data.forEach(currentRequest => {
+                            // ADDS REQUESTS TO REQUEST USESTATE
+                            setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                            });
+                            currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
+                        });
+                    }
+                ).catch(error => {
+                })
+        }
+        ).catch(error => {
+        })
+
+        setIsNormalToggled(true);
+        setIsDetailToggled(false); 
+    }
+
     // FUNCTION FOR VIEWING FORM DETAILS
     function openDetails(e, id) {
         e.preventDefault();
-        setRequestDetails(customFilter(requests, request => request.id === id)[0]);
+
+        const details = customFilter(requests, request => request.id === id)[0];
+        setRequestDetails(details);
+        setTechUpdate(details.request_update);
+        setStatusUpdate(details.status);
+
+
         setIsFormToggled(false);
         setIsPersonalToggled(false);
         setIsNormalToggled(false);
@@ -158,7 +197,7 @@ export function Dashboard() {
                 setRequestType("Maintenance");
                 setLocation("");
                 setAssetDescription("");
-                setPriority("low");
+                setPriority("Low");
                 document.querySelector("#low").checked = true;
                 setPreferredDate("");
                 setRequestDescription("");
@@ -337,6 +376,7 @@ export function Dashboard() {
                         <p>Priority</p>
                         <p>Created On</p>
                         <p>Location</p>
+                        <p>Status</p>
                         <p></p>
                     </div>
             {filteredRequests.toReversed().map((request) => {
@@ -365,7 +405,8 @@ export function Dashboard() {
 
                         })()}
                         <p>{request.deadline }</p>
-                        <p>{request.location }</p> 
+                        <p>{request.location }</p>
+                        <p>{request.status }</p>  
                         <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
                     </div>
                 );
@@ -391,6 +432,7 @@ export function Dashboard() {
                         <p>Priority</p>
                         <p>Created On</p>
                         <p>Location</p>
+                        <p>Status</p>
                         <p></p>
                     </div>
             {filteredRequests.toReversed().map((request) => {
@@ -419,7 +461,8 @@ export function Dashboard() {
 
                         })()}
                         <p>{request.deadline }</p>
-                        <p>{request.location }</p> 
+                        <p>{request.location }</p>
+                        <p>{request.status }</p>  
                         <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
                     </div>
                 );
@@ -436,22 +479,54 @@ export function Dashboard() {
         { isDetailToggled ?
             <div className="details">
                 <h2>Work Order Details</h2>
-                <button>Update</button>
-                <button>Delete</button>
+                <button onClick={(e)=>{
+                    e.preventDefault()
+                    axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
+                        response => {
+                            console.log(response);
+                            let newRequestArray = [];
+                            
+                            requests.map((request => {
+                                if(request.id !== requestDetails.id) {
+                                    newRequestArray.push(request);
+                                }
+                            }));
+
+                            setRequests(newRequestArray);
+                        }
+                    ).catch(error => {
+                        console.log(error);
+                    })
+            
+                    setIsDetailToggled(false);
+                }}>Delete</button>
                 <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
-                { // ASSIGNED TECHNICIANS AND CHANGE THE STATUS OF WORK ORDER REQUESTS FROM ASSIGNED -> IN PROGRESS -> COMPLETE
-                    requestDetails.assigned === sessionStorage.getItem("employeeName") ? 
-                    <select defaultValue={requestDetails.status}>
+                <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
+
+                { 
+                // ASSIGNED TECHNICIANS AND CHANGE THE STATUS OF WORK ORDER REQUESTS FROM ASSIGNED -> IN PROGRESS -> COMPLETE
+                // THE ASSIGNED TECHNICIAN AND WRITE UPDATES TO WORK ORDERS, AND EVERYONE ELSE CAN JUST READ THE UPDATES
+                    requestDetails.assigned === sessionStorage.getItem("employeeName") ?
+                    <div>
+                        <p><strong>Status:</strong></p>
+                        <select defaultValue={statusUpdate} onChange={e => setStatusUpdate(e.target.value)}>
                         <option value="Assigned">Assigned</option>
                         <option value="In Progress">In Progress</option>
                         <option value="Complete">Complete</option>
-                    </select> : <p>{requestDetails.status}</p>
+                    </select>
+                    <p><strong>Technician Update:</strong></p>
+                    <textarea value={techUpdate} style={{resize: "none"}} onChange={e => setTechUpdate(e.target.value)}></textarea>
+                    <button onClick={(e)=>{tUpdate(e, requestDetails.id)}}>Update</button>
+                    </div>
+                    : 
+                    <div>
+                        <p><strong>Status:</strong></p>
+                        <p>{statusUpdate}</p>
+                        <p><strong>Technician Update:</strong></p>
+                        <p>{techUpdate}</p>
+                    </div>
                 }
-                <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
-                <p><strong>Technician Update:</strong></p>
-                { // THE ASSIGNED TECHNICIAN AND WRITE UPDATES TO WORK ORDERS, AND EVERYONE ELSE CAN JUST READ THE UPDATES
-                    requestDetails.assigned === sessionStorage.getItem("employeeName") ? <textarea value={requestDetails.update}></textarea> : <p>{requestDetails.update}</p>
-                }
+
                 <p><strong>Created By:</strong> {requestDetails.employee} <strong>Contact Info:</strong> {requestDetails.employee_contact}</p>
                 <p><strong>Task Priority:</strong> {requestDetails.priority}</p>
                 <p><strong>Assigned To:</strong></p>
