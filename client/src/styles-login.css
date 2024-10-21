@@ -1,19 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
-img {
-  width: 3rem;
-}
-
-img, h1 {
-  margin-bottom: 2rem;
-}
-
-h1 {
-  font-family: "Inria Sans", sans-serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
 .login-container {
   display: flex;
   flex-direction: column;
@@ -22,3 +8,6 @@ h1 {
   height: 100vh;
 }
 
+.login-container .marketing {
+  margin-bottom: 3rem;
+}

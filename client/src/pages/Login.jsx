@@ -93,8 +93,14 @@ export function Login() {
 	}
 
 	return <div className="login-container">
-		<img src="./public/logo.png"/>
-		<h1>Centurion Work Orders</h1>
+		<div className="marketing">
+				<img src="/logo.png" />
+				<div>
+					<h1 class="hr-lines">Centurion</h1>
+					<small>Work Order Systems</small>
+				</div>
+		</div>
+		
 		{ isLog ? 
 			<form className="form" onSubmit={(e)=>{HandleLogIn(e)}}>
 					<h2>Log In Or <Link to="#" onClick={()=>{handleFormChange(false)}}>Create Account</Link></h2>

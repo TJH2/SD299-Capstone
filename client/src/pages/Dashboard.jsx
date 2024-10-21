@@ -226,76 +226,94 @@ export function Dashboard() {
 
 
     return <>
-        <h2>Welcome, {sessionStorage.getItem("employeeName")}</h2>
-        <nav>
-            <ul>
-                <li><Link to="#" onClick={() => { 
-                    setIsNormalToggled(false);
-                    setIsDetailToggled(false);
-                    setIsPersonalToggled(false); 
-                    setIsFormToggled(true); }}>Make A Work Order Request</Link></li>
+    
+        <div className="dashboard-container">
+            <div className="sidebar">
+            <div className="marketing">
+                    <img src="/logo.png" />
+                    <div>
+                        <h1>Centurion</h1>
+                        <small>Work Order Systems</small>
+                    </div>
+            </div>
 
-                { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
-                <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false);
-                    setIsNormalToggled(false);
-                    setIsDetailToggled(false);
-                    setIsPersonalToggled(true); 
-                    setFilteredRequests(customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"))); 
-                }}>Your Work Order Requests</Link></li> 
-                }
+            <nav>
+            <h3>Welcome, {sessionStorage.getItem("employeeName")}</h3>
+            <hr/>
+                <ul>
+                    <li>
+                        <img src="/add.svg"/>
+                        <Link to="#" onClick={() => { 
+                        setIsNormalToggled(false);
+                        setIsDetailToggled(false);
+                        setIsPersonalToggled(false); 
+                        setIsFormToggled(true); }}>Add Task Request</Link></li>
 
-                { // NORMAL MANAGERS CAN SEE ALL THEIR DEPARTMENT WORK ORDER REQUESTS
-                sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false);
-                    setIsPersonalToggled(false);
-                    setIsDetailToggled(false); 
-                    setIsNormalToggled(true);
-                    setFilteredRequests(customFilter(requests, request => request.employee_department === sessionStorage.getItem("employeeDepartment")));
-                }}>{ sessionStorage.getItem("employeeDepartment") 
-                    } Department Work Order Requests</Link></li> : "" 
-                }
+                    { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
+                    <li>
+                        <img src="/list.svg" />
+                        <Link to="#" onClick={() => { 
+                        setIsFormToggled(false);
+                        setIsNormalToggled(false);
+                        setIsDetailToggled(false);
+                        setIsPersonalToggled(true); 
+                        setFilteredRequests(customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"))); 
+                    }}>Your Task Requests</Link></li> 
+                    }
 
-                { // NORMAL IT/MAINTENANCE EMPLOYEES CAN SEE REQUESTS ASSIGNED TO THEM
-                sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false);
-                    setIsPersonalToggled(false);
-                    setIsDetailToggled(false); 
-                    setIsNormalToggled(true);
-                    setFilteredRequests(customFilter(requests, request => request.assigned === sessionStorage.getItem("employeeName")));
-                }}>Assigned Work Order Requests</Link></li> : "" 
-                }
+                    { // NORMAL MANAGERS CAN SEE ALL THEIR DEPARTMENT WORK ORDER REQUESTS
+                    sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link to="#" onClick={() => { 
+                        setIsFormToggled(false);
+                        setIsPersonalToggled(false);
+                        setIsDetailToggled(false); 
+                        setIsNormalToggled(true);
+                        setFilteredRequests(customFilter(requests, request => request.employee_department === sessionStorage.getItem("employeeDepartment")));
+                    }}>{ sessionStorage.getItem("employeeDepartment") 
+                        } Department Task Requests</Link></li> : "" 
+                    }
 
-                { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
-                sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false);
-                    setIsPersonalToggled(false);
-                    setIsDetailToggled(false);  
-                    setIsNormalToggled(true); 
-                    setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned === "Unassigned"));
-                }}> Unassigned { sessionStorage.getItem("employeeDepartment") } Work Order Requests</Link></li> : "" 
-                }
+                    { // NORMAL IT/MAINTENANCE EMPLOYEES CAN SEE REQUESTS ASSIGNED TO THEM
+                    sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
+                        setIsFormToggled(false);
+                        setIsPersonalToggled(false);
+                        setIsDetailToggled(false); 
+                        setIsNormalToggled(true);
+                        setFilteredRequests(customFilter(requests, request => request.assigned === sessionStorage.getItem("employeeName")));
+                    }}>Assigned Tasks</Link></li> : "" 
+                    }
 
-                { // IT/MAINTENANCE MANAGERS CAN ONLY SEE ASSIGNED IT OR MAINTENANCE REQUESTS
-                sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
-                    setIsFormToggled(false);
-                    setIsPersonalToggled(false);
-                    setIsDetailToggled(false);  
-                    setIsNormalToggled(true);
-                    setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned !== "Unassigned"));
-                }}>Assigned { sessionStorage.getItem("employeeDepartment") } Work Order Requests</Link></li> : "" 
-                }
+                    { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
+                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><img src="/user-x.svg" /><Link to="#" onClick={() => { 
+                        setIsFormToggled(false);
+                        setIsPersonalToggled(false);
+                        setIsDetailToggled(false);  
+                        setIsNormalToggled(true); 
+                        setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned === "Unassigned"));
+                    }}> Unassigned { sessionStorage.getItem("employeeDepartment") } Tasks</Link></li> : "" 
+                    }
+
+                    { // IT/MAINTENANCE MANAGERS CAN ONLY SEE ASSIGNED IT OR MAINTENANCE REQUESTS
+                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><img src="/user-check.svg" /><Link to="#" onClick={() => { 
+                        setIsFormToggled(false);
+                        setIsPersonalToggled(false);
+                        setIsDetailToggled(false);  
+                        setIsNormalToggled(true);
+                        setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned !== "Unassigned"));
+                    }}>Assigned { sessionStorage.getItem("employeeDepartment") } Tasks</Link></li> : "" 
+                    }
 
 
-                <li><Link to="#" onClick={(e) => { e.preventDefault(e); sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link></li>
-            </ul>
-        </nav>
-
+                    <li><img src="/logout.svg" /><Link to="#" onClick={(e) => { e.preventDefault(e); sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <div className="dashboard-content">
 
             {
                 // FORM SUBMISSION VIEW ---------------------------------------------------------------------------------------------------------
             }
-
+            
             { isFormToggled ? 
                 
                 <form id="form" className="form" onSubmit={(e)=>{submitForm(e);}}>
@@ -545,6 +563,7 @@ export function Dashboard() {
                 <p>{requestDetails.assigned_contact}</p>
             </div>
         : null }
-
+        </div>
+        </div>
     </>
    }

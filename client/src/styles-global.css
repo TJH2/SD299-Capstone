@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
 * {
     box-sizing: border-box;
@@ -9,7 +10,94 @@
 
   body {
     background-color: #f9fafb;
+    height: 100vh;
   }
+
+/* DASHBOARD SIDEBAR */
+
+.sidebar {
+  min-width: 21rem;
+  background-color: white;
+  min-height: 100vh;
+  border: solid 1px #e6e6e6;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  min-height: inherit;
+  padding: 0 1rem;
+}
+
+nav ul {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+nav h3 {
+  margin: 0 0.5rem 1rem;
+}
+
+nav hr {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+
+nav li {
+  display: flex;
+  align-items: center;
+  list-style-type: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+li img {
+  padding-right: 0.5rem;
+}
+
+li:hover img {
+  filter: brightness(0) invert(1);
+}
+
+nav ul li:last-child {
+  margin-top: auto;
+  position: sticky;
+  bottom: 1rem;
+}
+
+nav li:hover {
+  background-color: #3498db;
+  cursor: pointer;
+}
+
+nav li:hover a {
+  color: white;
+}
+
+nav a {
+  text-decoration: none;
+  color: black;
+  font-size: large;
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.dashboard-container {
+  display: flex;
+}
+
+.dashboard-content {
+  padding: 1rem;
+}
+
+
+.grid {
+  margin: 1rem;
+}
 
 .warning {
   color: lightcoral;
@@ -65,8 +153,9 @@
 .form {
   padding: 30px 40px;
   background-color: #fff;
+  border: solid 1px #e6e6e6;
   border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  /* box-shadow: 0 2px 10px rgba(0,0,0,0.3); */
   width: 500px;
 }
 
@@ -131,4 +220,39 @@
   padding: 10px;
   margin-top: 20px;
   width: 100%;
+}
+
+/* LOGO MARKETING STYLES */
+
+.dashboard-container .marketing {
+  margin-bottom: 1rem;
+}
+
+.marketing img {
+  height: 48px;
+}
+
+.marketing h1 {
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  line-height: .8;
+}
+
+.marketing small {
+  padding-left: 3px;
+  font-weight: 600;
+}
+
+.marketing {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: rgb(240, 240, 240);
+}
+
+.marketing div {
+  padding-left: .75rem;
+  height: 48px;
 }
