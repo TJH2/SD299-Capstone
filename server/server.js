@@ -85,10 +85,11 @@ app.delete("/request/:id", (request, response) => {
 
 // CREATE NEW FORM REQUEST.
 app.post('/new-request', (request, response) => {
-    const {request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department} = request.body;
-    createRequest(request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department, (err, data) => {
+    const {created_on, request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department} = request.body;
+    createRequest(created_on, request_type, asset, location, priority, deadline, request_description, employee, employee_contact, employee_department, (err, data) => {
         if(err){
             response.status(500).send(err.message)
+            console.log("DIDN'T WORK");
         } else {
             response.status(201).send(`NEW WORK ORDER REQUEST CREATED FOR: ${asset}`)
         }

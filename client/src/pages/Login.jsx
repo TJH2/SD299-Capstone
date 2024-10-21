@@ -96,7 +96,7 @@ export function Login() {
 		<div className="marketing">
 				<img src="/logo.png" />
 				<div>
-					<h1 class="hr-lines">Centurion</h1>
+					<h1 className="hr-lines">Centurion</h1>
 					<small>Work Order Systems</small>
 				</div>
 		</div>

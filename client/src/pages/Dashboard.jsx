@@ -51,7 +51,7 @@ export function Dashboard() {
                     response.data.forEach(currentRequest => {
                         // ADDS REQUESTS TO REQUEST USESTATE
                         setRequests((requests) => {
-                            return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                            return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                         });
                     });
                 }
@@ -105,7 +105,7 @@ export function Dashboard() {
                         response.data.forEach(currentRequest => {
                             // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                             currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
                         });
@@ -133,7 +133,7 @@ export function Dashboard() {
                         response.data.forEach(currentRequest => {
                             // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on,asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                             currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
                         });
@@ -183,6 +183,7 @@ export function Dashboard() {
         // AXIOS CALL TO SEE IF USERNAME IS IN OUR DATABASE
         axios.post('http://localhost:3000/new-request', {
             request_type: requestType,
+            created_on: new Date().toISOString().split('T')[0],
             asset: assetDescription,
             location: location,
             priority: priority,
@@ -212,7 +213,7 @@ export function Dashboard() {
                         response.data.forEach(currentRequest => {
                             // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => {
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                         });
                     }
@@ -223,7 +224,6 @@ export function Dashboard() {
             return;
         })
     }
-
 
     return <>
     
@@ -422,7 +422,14 @@ export function Dashboard() {
                             }
 
                         })()}
-                        <p>{request.deadline }</p>
+                        <p>{
+                            new Date(request.created_on).toLocaleDateString('en-US', {  
+                                month: '2-digit', 
+                                day: '2-digit',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                            })
+                        }</p>
                         <p>{request.location }</p>
                         <p>{request.status }</p>  
                         <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
@@ -478,7 +485,14 @@ export function Dashboard() {
                             }
 
                         })()}
-                        <p>{request.deadline }</p>
+                        <p>{
+                            new Date(request.created_on).toLocaleDateString('en-US', {  
+                                month: '2-digit', 
+                                day: '2-digit',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                            })
+                         }</p>
                         <p>{request.location }</p>
                         <p>{request.status }</p>  
                         <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
@@ -519,6 +533,21 @@ export function Dashboard() {
                     setIsDetailToggled(false);
                 }}>Delete</button>
                 <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
+                <p><strong>Request Created On:</strong> {new Date(requestDetails.created_on).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        timeZone: 'UTC'
+                    })}</p>
+                <p><strong>Preferred Completion Date:</strong> {
+                    new Date(requestDetails.deadline).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        timeZone: 'UTC'
+                    })
+                }</p>
+                <p><strong>Asset:</strong> {requestDetails.asset}</p>
                 <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
 
                 { 
