@@ -98,9 +98,9 @@ app.post('/new-request', (request, response) => {
 
 // ASSIGN TECHNICIAN
 app.put('/assign/:id', (request, response) => {
-    const { assigned, assigned_contact } = request.body;
+    const { assigned, assigned_contact, status } = request.body;
     
-    assignRequest(request.params.id, assigned, assigned_contact, (err, data) => {
+    assignRequest(request.params.id, assigned, assigned_contact, status, (err, data) => {
         if(err){
             response.status(500).send(err.message)
         } else {

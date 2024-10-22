@@ -47,12 +47,9 @@ const createRequest = (created_on, request_type, asset, location, priority, dead
 }
 
 // MANAGER ASSIGNING FORM TO MAINTENANCE WORKER
-const assignRequest = (id, assigned, assigned_contact, callback) => {
-    console.log(id);
-    console.log(assigned);
-    console.log(assigned_contact);
-    const sql = `UPDATE forms SET assigned = ?, assigned_contact = ? WHERE id = ?`
-    db.run(sql, [assigned, assigned_contact, id], callback )
+const assignRequest = (id, assigned, assigned_contact, status, callback) => {
+    const sql = `UPDATE forms SET assigned = ?, assigned_contact = ?, status = ? WHERE id = ?`
+    db.run(sql, [assigned, assigned_contact, status, id], callback )
 }
 
 // TECHNICIAN UPDATING FORM

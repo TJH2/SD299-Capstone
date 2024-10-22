@@ -90,12 +90,20 @@ export function Dashboard() {
     // FUNCTION FOR ASSIGNING TECHNICIANS
     function assignTech(e, name, id) {
         e.preventDefault();
+        let status;
         let contact;
-        name === "Unassigned" ? contact = "None" : contact = customFilter(technicians, tech => tech.name === name)[0].contact;
+        if(name === "Unassigned") {
+            contact = "None";
+            status = "Unassigned";
+        } else {
+            contact = customFilter(technicians, tech => tech.name === name)[0].contact;
+            status = "Assigned";
+        }
 
         axios.put(`http://localhost:3000/assign/${id}`,{
             assigned: name,
-            assigned_contact: contact
+            assigned_contact: contact,
+            status: status
         }).then(
             response => {
                 // PULLS ALL REQUESTS FROM DATABASE
@@ -432,7 +440,7 @@ export function Dashboard() {
                         }</p>
                         <p>{request.location }</p>
                         <p>{request.status }</p>  
-                        <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
+                        <button onClick={(e) =>{ openDetails(e, request.id)}}>Details</button>
                     </div>
                 );
             })}
@@ -495,7 +503,7 @@ export function Dashboard() {
                          }</p>
                         <p>{request.location }</p>
                         <p>{request.status }</p>  
-                        <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
+                        <button onClick={(e) =>{ openDetails(e, request.id)}}>Details</button>
                     </div>
                 );
             })}
@@ -511,6 +519,9 @@ export function Dashboard() {
         { isDetailToggled ?
             <div className="details">
                 <h2>Work Order Details</h2>
+                
+                { // ONLY EMPLOYEES THAT CREATE REQUESTS AND THE REQUEST HASN'T BEEN ASSIGNED CAN DELETE IT
+                requestDetails.employee === sessionStorage.getItem("employeeName") && statusUpdate === "Unassigned" ? 
                 <button onClick={(e)=>{
                     e.preventDefault()
                     axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
@@ -532,6 +543,8 @@ export function Dashboard() {
             
                     setIsDetailToggled(false);
                 }}>Delete</button>
+                : null }
+
                 <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
                 <p><strong>Request Created On:</strong> {new Date(requestDetails.created_on).toLocaleDateString('en-US', { 
                         year: 'numeric', 
@@ -562,7 +575,7 @@ export function Dashboard() {
                         <option value="Complete">Complete</option>
                     </select>
                     <p><strong>Technician Update:</strong></p>
-                    <textarea value={techUpdate} style={{resize: "none"}} onChange={e => setTechUpdate(e.target.value)}></textarea>
+                    <textarea value={ techUpdate === null ? "" : techUpdate } style={{resize: "none"}} onChange={e => setTechUpdate(e.target.value)}></textarea>
                     <button onClick={(e)=>{tUpdate(e, requestDetails.id)}}>Update</button>
                     </div>
                     : 
