@@ -8,6 +8,12 @@
     padding: 0px;
   }
 
+  :root {
+    --border-radius: 5px;
+    --border-default: 1px solid #e6e6e6;
+    --content-background: white;   
+  }
+
   body {
     background-color: #f9fafb;
     height: 100vh;
@@ -17,9 +23,9 @@
 
 .sidebar {
   min-width: 21rem;
-  background-color: white;
+  background-color: var(--content-background);
   min-height: 100vh;
-  border: solid 1px #e6e6e6;
+  border: var(--border-default)
 }
 
 nav {
@@ -41,17 +47,30 @@ nav h3 {
 
 nav hr {
   border: none;
-  border-top: 1px solid #ccc;
+  border-top: var(--border-default);
   margin-bottom: 1rem;
 }
 
 nav li {
-  display: flex;
-  align-items: center;
   list-style-type: none;
-  color: white;
+}
+
+nav .link {
+  display: flex;
   padding: 0.5rem;
-  border-radius: 4px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  font-family: "Inria Sans", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+  border-radius: var(--border-radius);
+}
+
+nav .link:hover {
+  background-color: #3498db;
+  cursor: pointer;
+  color: white;
 }
 
 li img {
@@ -66,24 +85,6 @@ nav ul li:last-child {
   margin-top: auto;
   position: sticky;
   bottom: 1rem;
-}
-
-nav li:hover {
-  background-color: #3498db;
-  cursor: pointer;
-}
-
-nav li:hover a {
-  color: white;
-}
-
-nav a {
-  text-decoration: none;
-  color: black;
-  font-size: large;
-  font-family: "Inria Sans", sans-serif;
-  font-weight: 600;
-  font-style: normal;
 }
 
 .dashboard-container {
@@ -109,7 +110,7 @@ nav a {
 .grid {
   margin: auto;
   border: 2px black solid;
-  border-radius: 5px;
+  border-radius: var(--border-radius);
   padding: 10px;
   width: 90%;
   text-align: center;
@@ -135,13 +136,22 @@ nav a {
 /* DETAILS STYLING */
 
 .details {
-  margin: auto;
-  border: 2px black solid;
-  border-radius: 5px;
-  padding: 10px;
-  width: 90%;
-  text-align: center;
+  background-color: var(--content-background);
+  border: var(--border-default);
+  border-radius: var(--border-radius);
+  padding: 1rem;
 }
+
+.details h2 {
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.details button {
+  float: inline-end;
+  padding: .5rem;
+}
+
 
 /* FORM STYLING */
 
