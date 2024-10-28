@@ -51,7 +51,7 @@ export function Dashboard() {
                     response.data.forEach(currentRequest => {
                         // ADDS REQUESTS TO REQUEST USESTATE
                         setRequests((requests) => {
-                            return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                            return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                         });
                     });
                 }
@@ -90,12 +90,20 @@ export function Dashboard() {
     // FUNCTION FOR ASSIGNING TECHNICIANS
     function assignTech(e, name, id) {
         e.preventDefault();
+        let status;
         let contact;
-        name === "Unassigned" ? contact = "None" : contact = customFilter(technicians, tech => tech.name === name)[0].contact;
+        if(name === "Unassigned") {
+            contact = "None";
+            status = "Unassigned";
+        } else {
+            contact = customFilter(technicians, tech => tech.name === name)[0].contact;
+            status = "Assigned";
+        }
 
         axios.put(`http://localhost:3000/assign/${id}`,{
             assigned: name,
-            assigned_contact: contact
+            assigned_contact: contact,
+            status: status
         }).then(
             response => {
                 // PULLS ALL REQUESTS FROM DATABASE
@@ -105,7 +113,7 @@ export function Dashboard() {
                         response.data.forEach(currentRequest => {
                             // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                             currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
                         });
@@ -133,7 +141,7 @@ export function Dashboard() {
                         response.data.forEach(currentRequest => {
                             // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on,asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                             currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
                         });
@@ -183,6 +191,7 @@ export function Dashboard() {
         // AXIOS CALL TO SEE IF USERNAME IS IN OUR DATABASE
         axios.post('http://localhost:3000/new-request', {
             request_type: requestType,
+            created_on: new Date().toISOString().split('T')[0],
             asset: assetDescription,
             location: location,
             priority: priority,
@@ -212,7 +221,7 @@ export function Dashboard() {
                         response.data.forEach(currentRequest => {
                             // ADDS REQUESTS TO REQUEST USESTATE
                             setRequests((requests) => {
-                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on, asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
                             });
                         });
                     }
@@ -223,7 +232,6 @@ export function Dashboard() {
             return;
         })
     }
-
 
     return <>
     
@@ -421,10 +429,17 @@ export function Dashboard() {
                             }
 
                         })()}
-                        <p>{request.deadline }</p>
+                        <p>{
+                            new Date(request.created_on).toLocaleDateString('en-US', {  
+                                month: '2-digit', 
+                                day: '2-digit',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                            })
+                        }</p>
                         <p>{request.location }</p>
                         <p>{request.status }</p>  
-                        <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
+                        <button onClick={(e) =>{ openDetails(e, request.id)}}>Details</button>
                     </div>
                 );
             })}
@@ -477,10 +492,17 @@ export function Dashboard() {
                             }
 
                         })()}
-                        <p>{request.deadline }</p>
+                        <p>{
+                            new Date(request.created_on).toLocaleDateString('en-US', {  
+                                month: '2-digit', 
+                                day: '2-digit',
+                                year: 'numeric',
+                                timeZone: 'UTC'
+                            })
+                         }</p>
                         <p>{request.location }</p>
                         <p>{request.status }</p>  
-                        <p><Link to="#" onClick={(e) =>{ openDetails(e, request.id)}}>Details</Link></p>
+                        <button onClick={(e) =>{ openDetails(e, request.id)}}>Details</button>
                     </div>
                 );
             })}
@@ -496,6 +518,9 @@ export function Dashboard() {
         { isDetailToggled ?
             <div className="details">
                 <h2>Work Order Details</h2>
+                
+                { // ONLY EMPLOYEES THAT CREATE REQUESTS AND THE REQUEST HASN'T BEEN ASSIGNED CAN DELETE IT
+                requestDetails.employee === sessionStorage.getItem("employeeName") && statusUpdate === "Unassigned" ? 
                 <button onClick={(e)=>{
                     e.preventDefault()
                     axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
@@ -517,7 +542,24 @@ export function Dashboard() {
             
                     setIsDetailToggled(false);
                 }}>Delete</button>
+                : null }
+
                 <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
+                <p><strong>Request Created On:</strong> {new Date(requestDetails.created_on).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        timeZone: 'UTC'
+                    })}</p>
+                <p><strong>Preferred Completion Date:</strong> {
+                    new Date(requestDetails.deadline).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        timeZone: 'UTC'
+                    })
+                }</p>
+                <p><strong>Asset:</strong> {requestDetails.asset}</p>
                 <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
 
                 { 
@@ -532,7 +574,7 @@ export function Dashboard() {
                         <option value="Complete">Complete</option>
                     </select>
                     <p><strong>Technician Update:</strong></p>
-                    <textarea value={techUpdate} style={{resize: "none"}} onChange={e => setTechUpdate(e.target.value)}></textarea>
+                    <textarea value={ techUpdate === null ? "" : techUpdate } style={{resize: "none"}} onChange={e => setTechUpdate(e.target.value)}></textarea>
                     <button onClick={(e)=>{tUpdate(e, requestDetails.id)}}>Update</button>
                     </div>
                     : 
