@@ -250,27 +250,26 @@ export function Dashboard() {
             <hr/>
                 <ul>
                     <li>
-                        <img src="/add.svg"/>
-                        <Link to="#" onClick={() => { 
+                        
+                        <Link className="link" to="#" onClick={() => { 
                         setIsNormalToggled(false);
                         setIsDetailToggled(false);
                         setIsPersonalToggled(false); 
-                        setIsFormToggled(true); }}>Add Task Request</Link></li>
+                        setIsFormToggled(true); }}><img src="/add.svg"/>Add Task Request</Link></li>
 
                     { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
                     <li>
-                        <img src="/list.svg" />
-                        <Link to="#" onClick={() => { 
+                        <Link className="link" to="#" onClick={() => { 
                         setIsFormToggled(false);
                         setIsNormalToggled(false);
                         setIsDetailToggled(false);
                         setIsPersonalToggled(true); 
                         setFilteredRequests(customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"))); 
-                    }}>Your Task Requests</Link></li> 
+                    }}><img src="/list.svg" />Your Task Requests</Link></li> 
                     }
 
                     { // NORMAL MANAGERS CAN SEE ALL THEIR DEPARTMENT WORK ORDER REQUESTS
-                    sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link className="link" to="#" onClick={() => { 
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false); 
@@ -281,7 +280,7 @@ export function Dashboard() {
                     }
 
                     { // NORMAL IT/MAINTENANCE EMPLOYEES CAN SEE REQUESTS ASSIGNED TO THEM
-                    sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false); 
@@ -291,27 +290,27 @@ export function Dashboard() {
                     }
 
                     { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
-                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><img src="/user-x.svg" /><Link to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false);  
                         setIsNormalToggled(true); 
                         setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned === "Unassigned"));
-                    }}> Unassigned { sessionStorage.getItem("employeeDepartment") } Tasks</Link></li> : "" 
+                    }}><img src="/user-x.svg" /> Unassigned { sessionStorage.getItem("employeeDepartment") } Tasks</Link></li> : "" 
                     }
 
                     { // IT/MAINTENANCE MANAGERS CAN ONLY SEE ASSIGNED IT OR MAINTENANCE REQUESTS
-                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><img src="/user-check.svg" /><Link to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false);  
                         setIsNormalToggled(true);
                         setFilteredRequests(customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned !== "Unassigned"));
-                    }}>Assigned { sessionStorage.getItem("employeeDepartment") } Tasks</Link></li> : "" 
+                    }}><img src="/user-check.svg" />Assigned { sessionStorage.getItem("employeeDepartment") } Tasks</Link></li> : "" 
                     }
 
 
-                    <li><img src="/logout.svg" /><Link to="#" onClick={(e) => { e.preventDefault(e); sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}>Log Out</Link></li>
+                    <li><Link className="link" to="#" onClick={(e) => { e.preventDefault(e); sessionStorage.removeItem("employeeName"); sessionStorage.removeItem("employeePosition"); sessionStorage.removeItem("employeeEmail"); sessionStorage.removeItem("employeeDepartment"); navigate('/');}}><img src="/logout.svg" />Log Out</Link></li>
                 </ul>
             </nav>
         </div>
