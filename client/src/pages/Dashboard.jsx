@@ -396,19 +396,20 @@ export function Dashboard() {
                 <div className="grid">
                     <h2>My Requests</h2>
                     <div className="head">
-                        <p>Assigned To</p>
-                        <p>Description</p>
+                        <p>Request ID</p>
+                        <p>Assigned Tech</p>
+                        <p>Asset</p>
                         <p>Priority</p>
                         <p>Created On</p>
-                        <p>Location</p>
                         <p>Status</p>
                         <p></p>
                     </div>
             {filteredRequests.toReversed().map((request) => {
                 return (
                     <div className="body" key={request.id}>
+                        <p>#{request.id}</p>
                         { request.assigned === "Unassigned" ? <p style={{color: "gold"}}>Pending</p>: <p>{request.assigned}</p>}
-                        <p>{request.request_description}</p>
+                        <p>{request.asset}</p>
                         {(()=>{
                             if(request.priority === "Low"){
                                 return (
@@ -437,7 +438,6 @@ export function Dashboard() {
                                 timeZone: 'UTC'
                             })
                         }</p>
-                        <p>{request.location }</p>
                         <p>{request.status }</p>  
                         <button onClick={(e) =>{ openDetails(e, request.id)}}>Details</button>
                     </div>
@@ -459,19 +459,20 @@ export function Dashboard() {
                 <div className="grid">
                     <h2>Work Order Requests</h2>
                     <div className="head">
+                        <p>Request ID</p>
                         <p>Created By</p>
-                        <p>Description</p>
+                        <p>Asset</p>
                         <p>Priority</p>
                         <p>Created On</p>
-                        <p>Location</p>
                         <p>Status</p>
                         <p></p>
                     </div>
             {filteredRequests.toReversed().map((request) => {
                 return (
                     <div className="body" key={request.id}>
+                        <p>#{request.id}</p>
                         <p>{request.employee}</p>
-                        <p>{request.request_description}</p>
+                        <p>{request.asset}</p>
                         {(()=>{
                             if(request.priority === "Low"){
                                 return (
@@ -500,7 +501,6 @@ export function Dashboard() {
                                 timeZone: 'UTC'
                             })
                          }</p>
-                        <p>{request.location }</p>
                         <p>{request.status }</p>  
                         <button onClick={(e) =>{ openDetails(e, request.id)}}>Details</button>
                     </div>
@@ -517,7 +517,7 @@ export function Dashboard() {
 
         { isDetailToggled ?
             <div className="details">
-                <div className="details-title">Work Order Details</div>
+                <div className="details-title"><strong>Work Order Details</strong></div>
                 
                 { // ONLY EMPLOYEES THAT CREATE REQUESTS AND THE REQUEST HASN'T BEEN ASSIGNED CAN DELETE IT
                 requestDetails.employee === sessionStorage.getItem("employeeName") && statusUpdate === "Unassigned" ? 
@@ -560,13 +560,39 @@ export function Dashboard() {
                     </div>
                     <div>
                         <span><strong>Preferred Completion By</strong></span>
-                        <span className="date"> { new Date(requestDetails.deadline).toLocaleDateString('en-US', { 
+                        {(()=>{
+                            // LETTING PEOPLE KNOW IF COMPLETION DATE IS APPROACHING
+                            const currentDate = new Date();
+                            const completionDate = new Date(requestDetails.deadline);
+                            const dateDifference = completionDate.getTime() - currentDate.getTime();
+                            const dayDiff = Math.round(dateDifference / (1000 * 3600 * 24));
+                            const displayDate = completionDate.toLocaleDateString('en-US', { 
                                 year: 'numeric', 
                                 month: 'long', 
                                 day: 'numeric',
                                 timeZone: 'UTC'
-                            })}
-                        </span>
+                            })
+
+                            if(dayDiff > 5){ // GREATER THAN 5 DAYS AWAY
+                                return (
+                                    <span className="date" style={{color: "green"}}>{displayDate}</span>
+                                )
+                            } else if(dayDiff > 3){ // GREATER THAN 3 DAYS AWAY
+                                return (
+                                    <span className="date" style={{color: "yellow"}}>{displayDate}</span>
+                                )
+                            } else if(dayDiff > 0) { // GREATER THAN 0 DAYS AWAY
+                                return (
+                                    <span className="date" style={{color: "coral"}}>{displayDate}</span>
+                                )
+                            } else{ // 0 DAYS OR PAST DUE
+                                return (
+                                    <span className="date" style={{color: "red"}}>{displayDate}</span>
+                                )
+                            }
+
+
+                        })()}
                     </div>
                 </div>
                     
@@ -624,7 +650,26 @@ export function Dashboard() {
 
                     <div className="priority-details">
                         <p><strong>Task Priority</strong></p>
-                        <p>{requestDetails.priority}</p>
+                        {(()=>{
+                            if(requestDetails.priority === "Low"){
+                                return (
+                                    <p style={{color: "green", fontWeight: "bold"}}>{requestDetails.priority}</p>
+                                )
+                            } else if(requestDetails.priority === "Medium"){
+                                return (
+                                    <p style={{color: "yellow", fontWeight: "bold"}}>{requestDetails.priority}</p>
+                                )
+                            } else if(requestDetails.priority === "High") {
+                                return (
+                                    <p style={{color: "coral", fontWeight: "bold"}}>{requestDetails.priority}</p>
+                                )
+                            } else{
+                                return (
+                                    <p style={{color: "red", fontWeight: "bold"}}>{requestDetails.priority}</p>
+                                )
+                            }
+
+                        })()}
                     </div>
                    
                 
@@ -641,8 +686,7 @@ export function Dashboard() {
                         })} 
                     </select> : <p>{requestDetails.assigned}</p>
                 } 
-                <p><strong>Contact Info:</strong></p> 
-                <p>{requestDetails.assigned_contact}</p>
+                { requestDetails.assigned != "Unassigned" ? <p>{requestDetails.assigned_contact}</p> : null }
                 </div>
                 
             </div>
