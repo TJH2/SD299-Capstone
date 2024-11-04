@@ -154,22 +154,80 @@ nav ul li:last-child {
 /* DETAILS STYLING */
 
 .details {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  grid-template-areas:
+   "title title delete"
+   "date date date"
+   "asset asset asset"
+   "description description description"
+   "creator priority assignment"
+   "tech tech status";
+  row-gap: 1rem;
+  column-gap: 3rem;
   background-color: var(--content-background);
   border: var(--border-default);
   border-radius: var(--border-radius);
-  padding: 1rem;
+  padding: 2rem;
 }
 
-.details h2 {
-  display: inline-block;
-  margin-bottom: 1rem;
+.details-title {
+  grid-area: title;
+  font-size: 1.5rem;
 }
 
-.details button {
-  float: inline-end;
-  padding: .5rem;
+.delete-request {
+  grid-area: delete;
+  width: 100px;
 }
 
+.date-details {
+  margin-top: 1rem;
+  grid-area: date;
+}
+
+.date-details .date {
+  margin-left: .5rem;
+}
+
+.asset-details {
+  grid-area: asset;
+}
+
+.description-details {
+  grid-area: description;
+}
+
+.created-by-details {
+  grid-area: creator;
+}
+
+.asssignment-details {
+  grid-area: assignment;
+}
+
+.priority-details {
+  grid-area: priority;
+}
+
+.status-details {
+  grid-area: status;
+}
+
+.tech-update {
+  grid-area: tech;
+  display: flex;
+  flex-direction: column;
+}
+
+.tech-update textarea {
+  min-height: 100px;
+}
+
+.tech-update button {
+  margin-top: 8px;
+}
 
 /* FORM STYLING */
 
@@ -190,6 +248,7 @@ nav ul li:last-child {
 .form select {
   background-color: #fff;
   color: #777;
+  border: none;
 }
 
 .form textarea {
@@ -202,18 +261,23 @@ nav ul li:last-child {
   position: relative;
 }
 
-.form .form-control label, .form .form-control legend {
+.form .form-control label, 
+.form .form-control legend {
   color: #777;
   display: block;
   margin-bottom: 5px;
 }
 
-.form .form-control input, .form .form-control textarea, .form .form-control fieldset, .form .form-control select {
+.form .form-control input, 
+.form .form-control textarea,  
+.form .form-control select {
   border: 2px solid #f0f0f0;
   border-radius: 4px;
 }
 
-.form .form-control input, .form .form-control textarea, .form .form-control select {
+.form .form-control input, 
+.form .form-control textarea, 
+.form .form-control select {
   display: block;
   width: 100%;
   padding: 10px;
@@ -230,6 +294,10 @@ nav ul li:last-child {
 
 .form fieldset input {
   margin-right: 5px;
+}
+
+.form fieldset {
+  border: none;
 }
 
 .form-control input:focus {

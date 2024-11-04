@@ -275,7 +275,7 @@ export function Dashboard() {
                         setIsDetailToggled(false); 
                         setIsNormalToggled(true);
                         setFilteredRequests(customFilter(requests, request => request.employee_department === sessionStorage.getItem("employeeDepartment")));
-                    }}>{ sessionStorage.getItem("employeeDepartment") 
+                    }}><img src="/department.svg" />{ sessionStorage.getItem("employeeDepartment") 
                         } Department Task Requests</Link></li> : "" 
                     }
 
@@ -286,7 +286,7 @@ export function Dashboard() {
                         setIsDetailToggled(false); 
                         setIsNormalToggled(true);
                         setFilteredRequests(customFilter(requests, request => request.assigned === sessionStorage.getItem("employeeName")));
-                    }}>Assigned Tasks</Link></li> : "" 
+                    }}><img src="/task.svg" />Assigned Tasks</Link></li> : "" 
                     }
 
                     { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
@@ -517,11 +517,11 @@ export function Dashboard() {
 
         { isDetailToggled ?
             <div className="details">
-                <h2>Work Order Details</h2>
+                <div className="details-title">Work Order Details</div>
                 
                 { // ONLY EMPLOYEES THAT CREATE REQUESTS AND THE REQUEST HASN'T BEEN ASSIGNED CAN DELETE IT
                 requestDetails.employee === sessionStorage.getItem("employeeName") && statusUpdate === "Unassigned" ? 
-                <button onClick={(e)=>{
+                <button className="delete-request" onClick={(e)=>{
                     e.preventDefault()
                     axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
                         response => {
@@ -542,53 +542,94 @@ export function Dashboard() {
             
                     setIsDetailToggled(false);
                 }}>Delete</button>
-                : null }
+                : <span className="delete-request"></span> }
+                
+                
+                <div className="date-details">    
+                    <div className="request-id"><p><strong>ID # </strong>{requestDetails.id}</p></div>
+                    <div>
+                        <span><strong>Requested On</strong></span>
+                        <span className="date"> {new Date(requestDetails.created_on).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                timeZone: 'UTC'
+                                
+                            })}
+                        </span>                        
+                    </div>
+                    <div>
+                        <span><strong>Preferred Completion By</strong></span>
+                        <span className="date"> { new Date(requestDetails.deadline).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric',
+                                timeZone: 'UTC'
+                            })}
+                        </span>
+                    </div>
+                </div>
+                    
+                <div className="asset-details">
+                    <p><strong>Asset</strong></p>
+                    {requestDetails.asset}
+                </div>
+                   
 
-                <p><strong>Work Order ID:</strong> {requestDetails.id}</p>
-                <p><strong>Request Created On:</strong> {new Date(requestDetails.created_on).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        timeZone: 'UTC'
-                    })}</p>
-                <p><strong>Preferred Completion Date:</strong> {
-                    new Date(requestDetails.deadline).toLocaleDateString('en-US', { 
-                        year: 'numeric', 
-                        month: 'long', 
-                        day: 'numeric',
-                        timeZone: 'UTC'
-                    })
-                }</p>
-                <p><strong>Asset:</strong> {requestDetails.asset}</p>
-                <p><strong>Request Description:</strong> {requestDetails.request_description}</p>
-
+                <div className="description-details">     
+                    <p><strong>Request Description</strong></p>
+                    {requestDetails.request_description}    
+                </div>
+                    
+                    
                 { 
                 // ASSIGNED TECHNICIANS AND CHANGE THE STATUS OF WORK ORDER REQUESTS FROM ASSIGNED -> IN PROGRESS -> COMPLETE
                 // THE ASSIGNED TECHNICIAN AND WRITE UPDATES TO WORK ORDERS, AND EVERYONE ELSE CAN JUST READ THE UPDATES
                     requestDetails.assigned === sessionStorage.getItem("employeeName") ?
-                    <div>
-                        <p><strong>Status:</strong></p>
-                        <select defaultValue={statusUpdate} onChange={e => setStatusUpdate(e.target.value)}>
-                        <option value="Assigned">Assigned</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Complete">Complete</option>
-                    </select>
-                    <p><strong>Technician Update:</strong></p>
-                    <textarea value={ techUpdate === null ? "" : techUpdate } style={{resize: "none"}} onChange={e => setTechUpdate(e.target.value)}></textarea>
-                    <button onClick={(e)=>{tUpdate(e, requestDetails.id)}}>Update</button>
-                    </div>
+                    <>
+                        <div className="status-details">
+                            <p><strong>Status</strong></p>
+                            <select defaultValue={statusUpdate} onChange={e => setStatusUpdate(e.target.value)}>
+                                <option value="Assigned">Assigned</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Complete">Complete</option>
+                            </select>
+                        </div>
+                        <div className="tech-update">
+                            <p><strong>Technician Update</strong></p>
+                            <textarea value={techUpdate === null ? "" : techUpdate} style={{ resize: "none" }} onChange={e => setTechUpdate(e.target.value)}></textarea>
+                            <button onClick={(e) => { tUpdate(e, requestDetails.id); } }>Update</button>
+                        </div>
+                    </>
                     : 
-                    <div>
-                        <p><strong>Status:</strong></p>
-                        <p>{statusUpdate}</p>
-                        <p><strong>Technician Update:</strong></p>
-                        <p>{techUpdate}</p>
-                    </div>
-                }
+                    <>
+                        <div className="status-details">
+                        <p><strong>Status</strong></p>
+                            {statusUpdate}
+                        </div>
 
-                <p><strong>Created By:</strong> {requestDetails.employee} <strong>Contact Info:</strong> {requestDetails.employee_contact}</p>
-                <p><strong>Task Priority:</strong> {requestDetails.priority}</p>
-                <p><strong>Assigned To:</strong></p>
+                        <div className="tech-update">
+                            <p><strong>Technician Update</strong></p>
+                            {techUpdate}
+                        </div>
+                    </>
+                
+                    }
+                
+                    <div className="created-by-details">
+                        <p><strong>Created By</strong></p>
+                        <p>{requestDetails.employee}</p> 
+                        <p>{requestDetails.employee_contact}</p>
+                    </div>
+
+                    <div className="priority-details">
+                        <p><strong>Task Priority</strong></p>
+                        <p>{requestDetails.priority}</p>
+                    </div>
+                   
+                
+                <div className="assignment-details">
+                <p><strong>Assigned To</strong></p>
                 {   // MANAGERS OF MAINTENANCE AND IT DEPARTMENTS CAN ASSIGN TASKS TO THEIR TECHNICIANS
                     sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") === requestDetails.request_type ? 
                     <select defaultValue={requestDetails.assigned} onChange={(e) => {assignTech(e, e.target.value, requestDetails.id)}}>
@@ -602,6 +643,8 @@ export function Dashboard() {
                 } 
                 <p><strong>Contact Info:</strong></p> 
                 <p>{requestDetails.assigned_contact}</p>
+                </div>
+                
             </div>
         : null }
         </div>
