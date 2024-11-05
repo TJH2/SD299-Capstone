@@ -20,8 +20,7 @@ export function Dashboard() {
     const [filteredRequests, setFilteredRequests] = useState([]); // USESTATE ARRAY FOR FILTERED REQUESTS
     const [requestDetails, setRequestDetails] = useState([]); // USE STATE FOR REQUEST DETAILS
     const [technicians, setTechnicians] = useState([]); // ARRAY TO HOLD MAINTENANCE/IT TECHNICIANS
-    const [techUpdate, setTechUpdate] = useState("");
-    const [statusUpdate, setStatusUpdate] = useState("");
+    const [message, setMessage] = useState("");
     
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
 
@@ -126,12 +125,20 @@ export function Dashboard() {
     }
 
     // FUNCTION FOR TECH UPDATE
-    function tUpdate(e, id) {
+    function messageUpdater(e, id, oldMessages) {
         e.preventDefault();
 
-        axios.put(`http://localhost:3000/update/${id}`,{
-            status: statusUpdate,
-            request_update: techUpdate
+        if(message === "") {
+            return;
+        }
+        
+        document.getElementsByClassName(".request-messages").scrollTop = 0;
+
+        const newMessage = "~" + sessionStorage.getItem("employeeName") + " (" + new Date().toLocaleDateString('en-US') + "): " + message;
+
+
+        axios.put(`http://localhost:3000/update-message/${id}`,{
+           message: newMessage + oldMessages
         }).then(
             response => {
                 // PULLS ALL REQUESTS FROM DATABASE
@@ -152,8 +159,34 @@ export function Dashboard() {
         ).catch(error => {
         })
 
-        setIsNormalToggled(true);
-        setIsDetailToggled(false); 
+        setMessage("");
+    }
+
+    // FUNCTION FOR TECH UPDATE
+    function statusUpdater(e, id, status) {
+        e.preventDefault();
+
+        axios.put(`http://localhost:3000/update-status/${id}`,{
+            status: status
+        }).then(
+            response => {
+                // PULLS ALL REQUESTS FROM DATABASE
+                axios.get('http://localhost:3000/requests').then(
+                    response => {
+                        setRequests([]);
+                        response.data.forEach(currentRequest => {
+                            // ADDS REQUESTS TO REQUEST USESTATE
+                            setRequests((requests) => { // REFILLS ALL FORMS WITH MOST RESENT INFO AFTER CHANGE
+                                return [...requests, { id: currentRequest.id, request_type: currentRequest.request_type, created_on: currentRequest.created_on,asset: currentRequest.asset, location: currentRequest.location, priority: currentRequest.priority, deadline:  currentRequest.deadline, request_description:  currentRequest.request_description, request_update: currentRequest.request_update, employee: currentRequest.employee, employee_contact: currentRequest.employee_contact, employee_department: currentRequest.employee_department, assigned: currentRequest.assigned, assigned_contact: currentRequest.assigned_contact, status: currentRequest.status }];
+                            });
+                            currentRequest.id === id ? setRequestDetails(currentRequest) : null; // RESETS DETAIL VISUALS AFTER CHANGE
+                        });
+                    }
+                ).catch(error => {
+                })
+        }
+        ).catch(error => {
+        }) 
     }
 
     // FUNCTION FOR VIEWING FORM DETAILS
@@ -162,8 +195,6 @@ export function Dashboard() {
 
         const details = customFilter(requests, request => request.id === id)[0];
         setRequestDetails(details);
-        setTechUpdate(details.request_update);
-        setStatusUpdate(details.status);
 
 
         setIsFormToggled(false);
@@ -520,7 +551,7 @@ export function Dashboard() {
                 <div className="details-title"><strong>Work Order Details</strong></div>
                 
                 { // ONLY EMPLOYEES THAT CREATE REQUESTS AND THE REQUEST HASN'T BEEN ASSIGNED CAN DELETE IT
-                requestDetails.employee === sessionStorage.getItem("employeeName") && statusUpdate === "Unassigned" ? 
+                requestDetails.employee === sessionStorage.getItem("employeeName") && requestDetails.status === "Unassigned" ? 
                 <button className="delete-request" onClick={(e)=>{
                     e.preventDefault()
                     axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
@@ -615,32 +646,51 @@ export function Dashboard() {
                     <>
                         <div className="status-details">
                             <p><strong>Status</strong></p>
-                            <select defaultValue={statusUpdate} onChange={e => setStatusUpdate(e.target.value)}>
+                            <select defaultValue={requestDetails.status} onChange={e => statusUpdater(e, requestDetails.id, e.target.value)}>
                                 <option value="Assigned">Assigned</option>
                                 <option value="In Progress">In Progress</option>
                                 <option value="Complete">Complete</option>
                             </select>
-                        </div>
-                        <div className="tech-update">
-                            <p><strong>Technician Update</strong></p>
-                            <textarea value={techUpdate === null ? "" : techUpdate} style={{ resize: "none" }} onChange={e => setTechUpdate(e.target.value)}></textarea>
-                            <button onClick={(e) => { tUpdate(e, requestDetails.id); } }>Update</button>
                         </div>
                     </>
                     : 
                     <>
                         <div className="status-details">
                         <p><strong>Status</strong></p>
-                            {statusUpdate}
-                        </div>
-
-                        <div className="tech-update">
-                            <p><strong>Technician Update</strong></p>
-                            {techUpdate}
+                            {requestDetails.status}
                         </div>
                     </>
-                
                     }
+
+                    <div className="tech-update">
+                        <p><strong>Work Order Messages</strong></p>
+                        <div className="request-messages">
+                        {(()=>{
+
+                            const conversation = requestDetails.request_update;
+                            let messages1 = conversation.split("~");
+                            messages1.shift();
+                            let messages2 = [];
+
+                            for (let i = 0; i < messages1.length; i++){
+                                messages2.push(messages1[i].split(":"));
+                            }
+
+                            return (
+                                <>
+                                  {messages2.map((message, index) => (
+                                    <div key={index}>
+                                    <p><strong>{message[0]}:</strong> {message[1]}</p>
+                                    <br/>
+                                    </div>
+                                  ))}
+                                </>
+                              );
+                        })()}
+                        </div>
+                        <textarea rows="5" resize="none" placeholder="Add A Message To This Work Order" onChange={e => setMessage(e.target.value)} value={message}></textarea>
+                        <button onClick={(e) => {messageUpdater(e, requestDetails.id, requestDetails.request_update);} }>Send Message</button>
+                    </div>
                 
                     <div className="created-by-details">
                         <p><strong>Created By</strong></p>
@@ -688,7 +738,6 @@ export function Dashboard() {
                 } 
                 { requestDetails.assigned != "Unassigned" ? <p>{requestDetails.assigned_contact}</p> : null }
                 </div>
-                
             </div>
         : null }
         </div>

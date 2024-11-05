@@ -53,9 +53,15 @@ const assignRequest = (id, assigned, assigned_contact, status, callback) => {
 }
 
 // TECHNICIAN UPDATING FORM
-const updateRequest = (id, status, request_update, callback) => {
-    const sql = `UPDATE forms SET status = ?, request_update = ? WHERE id = ?`
-    db.run(sql, [status, request_update, id], callback )
+const updateRequestMessage = (id, request_update, callback) => {
+    const sql = `UPDATE forms SET request_update = ? WHERE id = ?`
+    db.run(sql, [request_update, id], callback )
+}
+
+// TECHNICIAN UPDATING FORM
+const updateRequestStatus = (id, status, callback) => {
+    const sql = `UPDATE forms SET status = ? WHERE id = ?`
+    db.run(sql, [status, id], callback )
 }
 
 // DELETE FORM
@@ -64,4 +70,4 @@ const deleteRequest = (id, callback) => {
     db.run(sql, id, callback)
 }
 
-module.exports = { readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, updateRequest, deleteRequest }
+module.exports = { readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, updateRequestMessage, updateRequestStatus, deleteRequest }

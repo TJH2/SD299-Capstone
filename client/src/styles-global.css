@@ -219,12 +219,31 @@ nav ul li:last-child {
   flex-direction: column;
 }
 
-.tech-update textarea {
-  min-height: 100px;
+.request-messages {
+  border: 2px black solid; 
+  border-radius: 5px 5px 0px 0px;
+  padding: 10px; 
+  height: 225px; 
+  width: 375px;
+  overflow-y: scroll;
 }
 
-.tech-update button {
-  margin-top: 8px;
+.details textarea {
+  resize: none;
+  border: 2px black solid;
+  border-radius: 0px 0px 5px 5px;
+  border-top: none;
+  padding: 10px;
+  margin-bottom: 2px;
+}
+
+.details button {
+  cursor: pointer;
+  background-color: #3498db;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 16px;
 }
 
 /* FORM STYLING */

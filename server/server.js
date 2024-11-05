@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const {readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, updateRequest, deleteRequest} = require("./crud");
+const {readEmployees, createEmployee, findEmployee, deleteEmployee, readRequests, createRequest, assignRequest, updateRequestMessage, updateRequestStatus, deleteRequest} = require("./crud");
 const app = express();
 
 app.use(cors());
@@ -110,10 +110,23 @@ app.put('/assign/:id', (request, response) => {
 })
 
 // TECHNICIAN UPDATE
-app.put('/update/:id', (request, response) => {
-    const { status, request_update } = request.body;
+app.put('/update-status/:id', (request, response) => {
+    const status = request.body.status;
     
-    updateRequest(request.params.id, status, request_update, (err, data) => {
+    updateRequestStatus(request.params.id, status, (err, data) => {
+        if(err){
+            response.status(500).send(err.message)
+        } else {
+            response.status(201).send(`WORK ORDER ASSIGNED SUCCESSFULLY`)
+        }
+    })
+})
+
+// TECHNICIAN UPDATE
+app.put('/update-message/:id', (request, response) => {
+    const request_update = request.body.message;
+    
+    updateRequestMessage(request.params.id, request_update, (err, data) => {
         if(err){
             response.status(500).send(err.message)
         } else {
