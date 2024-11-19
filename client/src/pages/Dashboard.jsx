@@ -131,6 +131,11 @@ export function Dashboard() {
         if(message === "") {
             return;
         }
+
+        //PREVENTS NULL ATTACHMENT ON FIRST MESSAGE
+        if(oldMessages === null) {
+            oldMessages = "";
+        }
         
         document.getElementsByClassName(".request-messages").scrollTop = 0;
 
@@ -668,6 +673,11 @@ export function Dashboard() {
                         {(()=>{
 
                             const conversation = requestDetails.request_update;
+
+                            if (conversation === null) {
+                                return;
+                            }
+
                             let messages1 = conversation.split("~");
                             messages1.shift();
                             let messages2 = [];
