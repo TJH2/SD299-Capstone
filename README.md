@@ -51,6 +51,7 @@ Technicians have the ability to change the status of a request from assigned->in
 ![Capture](https://github.com/user-attachments/assets/cb578dd8-afed-4113-8933-95946a931e07)
 
 Maintenance/IT Managers can view all requests sent to their department seperated by assigned/unassigned.
+
 ![Capture](https://github.com/user-attachments/assets/17e95bec-ec0d-4a14-bde1-9daaaeb35164)
 
 Maintenance/IT Managers can assign requests to their department's technicians.
