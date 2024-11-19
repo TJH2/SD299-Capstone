@@ -7,6 +7,10 @@ An application for Maintenance Work Orders and IT request tickets.
 This program was created using ReactJS with a SQLite database.
 
 ## Log In Information
+
+INSTRUCTIONS:
+Clone the Repo, CD into Client/Server Files and run npm run dev
+
 Sales Manager: sm@test.com//123
 Salesman Employee1: s1@test.com//123
 Salesman Employee2: s2@test.com//123
