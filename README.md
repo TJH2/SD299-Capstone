@@ -1,5 +1,5 @@
 # Centurión Maintenance (SD299-Capstone)
-This is our SD299 Capstone Project
+This is the Fall 2024 SD299 Capstone Project for Timothy Jake Holmes II and Kristopher McFarland
 
 
 ## Project Info
