@@ -1,15 +1,13 @@
 SALES
-Sales Manager: sm@test.com//123
-Salesman Employee1: s1@test.com//123
-Salesman Employee2: s2@test.com//123
-Jake Holmes: jh@test.com//123
+Jan "The Man": JTMan@cm.com//123 - Manager
+Erlich Bachman: EBachman@cm.com//123 - Employee
 
 MAINTENANCE
-Maintenance Manager: mm@test.com//123
-Maintenance Employee1: m1@test.com//123
-Maintenance Employee2: m2@test.com//123
+Hank Hill: HHill@cm.com//123 - Manager
+Dale Gribble: DGribble@cm.com//123 - Technician
+Rusty Shackleford: RShackleford@cm.com//123 - Technician
 
 IT
-IT Manager: im@test.com//123
-IT Employee1: i1@test.com//123
-IT Employee2: i2@test.com//123
+Richard Hendrix: RHendrix@cm.com//123 - Manager
+Bertram Gilfoyle: BGilfoyle@cm.com//123 - Technician
+Big Head: BHead@cm.com//123 - Technician

@@ -48,7 +48,7 @@ app.get('/employee', (request, response) => {
     })
 })
 
-// DELETE A SPECIFIC EMPLOYEE BY ID
+// DELETE A SPECIFIC EMPLOYEE BY EMAIL
 app.delete("/employee/:email", (request, response) => {
     deleteEmployee(request.params.email, (err) => {
         if(err){

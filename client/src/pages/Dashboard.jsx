@@ -64,7 +64,7 @@ export function Dashboard() {
                         response => {
                             response.data.forEach(currentEmployee => {
                             // ADDS REQUESTS TO REQUEST USESTATE
-                            if(currentEmployee.department === sessionStorage.getItem("employeeDepartment") && currentEmployee.position === "Employee") {
+                            if(currentEmployee.department === sessionStorage.getItem("employeeDepartment") && currentEmployee.position === "Technician") {
                                 setTechnicians((employees) => {
                                     return [...employees, { name: currentEmployee.name, contact: currentEmployee.email }];
                                 });
@@ -315,8 +315,8 @@ export function Dashboard() {
                         } Department Task Requests</Link></li> : "" 
                     }
 
-                    { // NORMAL IT/MAINTENANCE EMPLOYEES CAN SEE REQUESTS ASSIGNED TO THEM
-                    sessionStorage.getItem("employeePosition") === "Employee" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
+                    { // NORMAL IT/MAINTENANCE TECHNICIANS CAN SEE REQUESTS ASSIGNED TO THEM
+                    sessionStorage.getItem("employeePosition") === "Technician" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false); 

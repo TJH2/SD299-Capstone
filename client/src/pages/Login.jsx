@@ -107,11 +107,11 @@ export function Login() {
 					{/* handling for form when user submits on sign in or log in */}
 					<div className="form-control">
 						<label htmlFor="employeeEmail">Employee Email</label>
-						<input type="text" id="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={15} />
+						<input type="text" id="employeeEmail" value={employeeEmail} onChange={e => setEmployeeEmail(e.target.value)} maxLength={30} />
 					</div>
 					<div className="form-control">
 					<label htmlFor="employeePass">Password</label>
-					<input type="password" id="employeePass" value={password} onChange={e => setPassword(e.target.value)} maxLength={15} />
+					<input type="password" id="employeePass" value={password} onChange={e => setPassword(e.target.value)} maxLength={30} />
 					</div>
 					{ warningMessage && <p className="warning"> {warningMessage}</p> }
 					
@@ -129,7 +129,7 @@ export function Login() {
 							name="name" 
 							value={account.name} 
 							onChange={handleInputChange} 
-							maxLength={15} />
+							maxLength={30} />
 					</div>
 					<div className="form-control">
 						<label htmlFor="employeeEmail">Employee Email</label>
@@ -139,7 +139,7 @@ export function Login() {
 							name="email" 
 							value={account.email} 
 							onChange={handleInputChange} 
-							maxLength={15} />
+							maxLength={30} />
 					</div>
 					<div className="form-control">
 						<label htmlFor="employeePass">Password</label>
@@ -149,7 +149,7 @@ export function Login() {
 							name="password" 
 							value={account.password} 
 							onChange={handleInputChange} 
-							maxLength={15} />
+							maxLength={30} />
 					</div>
 					<div className="form-control">
 						<label htmlFor="employeeDepartment">Department</label>
@@ -159,7 +159,7 @@ export function Login() {
 							name="department" 
 							value={account.department} 
 							onChange={handleInputChange} 
-							maxLength={15} />
+							maxLength={30} />
 					</div>
 					<div className="form-control">
 						<label htmlFor="employeePosition">Position</label>
@@ -169,6 +169,7 @@ export function Login() {
 							value={account.position} 
 							onChange={handleInputChange}>
 								<option value="Employee">Employee</option>
+								<option value="Technician">Technician</option>
 								<option value="Manager">Manager</option>
 						</select>  
 					</div> 
