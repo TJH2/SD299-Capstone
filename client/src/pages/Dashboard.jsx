@@ -28,7 +28,7 @@ export function Dashboard() {
     const initialized = useRef(false); // RE-USABLE HOOK TO MAKE SURE THINGS DON'T DOUBLE LOAD AT START
 
     // TOGGLES
-    const [isFormToggled, setIsFormToggled] = useState(false);
+    const [isFormToggled, setIsFormToggled] = useState(true);
     const [isPersonalToggled, setIsPersonalToggled] = useState(false); // PERSONAL VIEW FOR USER'S REQUESTS
     const [isNormalToggled, setIsNormalToggled] = useState(false); // NORMAL VIEW FOR MANAGERS/TECHNICIANS
     const [isDetailToggled, setIsDetailToggled] = useState(false); // DETAILED VIEW FOR USERS
@@ -322,7 +322,7 @@ export function Dashboard() {
                         setIsNormalToggled(false);
                         setIsDetailToggled(false);
                         setIsPersonalToggled(false); 
-                        setIsFormToggled(true); }}><img src="/add.svg"/>Add Task Request</Link></li>
+                        setIsFormToggled(true); }}><img src="/add.svg"/>Create a Task Request</Link></li>
 
                     { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
                     <li>
@@ -413,7 +413,7 @@ export function Dashboard() {
                 
                 <select name="request" id="request" value={requestType} onChange={e => setRequestType(e.target.value)}>
                     <option value="Maintenance">Maintenance</option>
-                    <option value="IT">Information Technology</option>
+                    <option value="IT">IT</option>
                 </select>
                 </div>
 
