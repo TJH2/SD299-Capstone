@@ -107,6 +107,21 @@ nav ul li:last-child {
 
 /* REQUEST TABLES STYLING */
 
+.reqFilter select {
+  margin: 0px 10px 5px 10px;
+  font-weight: bold;
+}
+
+.reqFilter label, option {
+  font-weight: bold;
+}
+
+.reqFilter button {
+  padding: 0px 5px;
+  width: auto !important;
+  display: inline-block;
+}
+
 .grid {
   margin: auto;
   border: 2px black solid;
@@ -153,7 +168,7 @@ nav ul li:last-child {
 
 .details {
   display: grid;
-  grid-template-columns: 1fr 1fr 1.25fr;
+  grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: auto;
   grid-template-areas:
    "title title delete"
@@ -224,7 +239,6 @@ nav ul li:last-child {
   border-radius: 5px 5px 0px 0px;
   padding: 10px; 
   height: 225px; 
-  width: 375px;
   overflow-y: scroll;
 }
 

@@ -16,6 +16,9 @@ export function Dashboard() {
     const [requestDescription, setRequestDescription] = useState("");
 
     // REQUEST TABLE
+    const [fP, setFP] = useState("")
+    const [fS, setFS] = useState("")
+    const [fOption, setFOption] = useState(null) // THE OPTION THAT DETERMINES WHICH FILTER IS BEING USED
     const [requests, setRequests] = useState([]); // USESTATE ARRAY ALL REQUESTS IN THE DATABASE
     const [filteredRequests, setFilteredRequests] = useState([]); // USESTATE ARRAY FOR FILTERED REQUESTS
     const [requestDetails, setRequestDetails] = useState([]); // USE STATE FOR REQUEST DETAILS
@@ -246,9 +249,9 @@ export function Dashboard() {
                 document.querySelector("#low").checked = true;
                 setPreferredDate("");
                 setRequestDescription("");
-
                 setWarningMessage("");
-                setIsFormToggled(false);
+
+                alert("Your Request Has Been Submitted");
 
                 // PULLS ALL REQUESTS FROM DATABASE
                 axios.get('http://localhost:3000/requests').then(
@@ -267,6 +270,34 @@ export function Dashboard() {
             setWarningMessage("Form Submission Error: Please Try Again");
             return;
         })
+    }
+
+    function superFilter(e) {
+        e.preventDefault();
+
+        let tempR = []
+
+        if(fOption === 1) { // USERS FILTER THEIR OWN REQUESTS
+            tempR = customFilter(requests, request => request.employee === sessionStorage.getItem("employeeName"));
+        } else if(fOption === 2) {
+            tempR = customFilter(requests, request => request.employee_department === sessionStorage.getItem("employeeDepartment"));
+        } else if(fOption === 3) {
+            tempR = customFilter(requests, request => request.assigned === sessionStorage.getItem("employeeName"));
+        } else if(fOption === 4) {
+            tempR = customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned === "Unassigned");
+        } else if(fOption === 5) {
+            tempR = customFilter(customFilter(requests, request => request.request_type === sessionStorage.getItem("employeeDepartment")), request => request.assigned !== "Unassigned");
+        }
+
+
+        if(fP !== "") {
+            tempR = customFilter(tempR, request => request.priority === fP);
+        }
+        if(fS !== "") {
+            tempR = customFilter(tempR, request => request.status === fS);
+        }
+
+        setFilteredRequests(tempR)
     }
 
     return <>
@@ -295,7 +326,10 @@ export function Dashboard() {
 
                     { // ALL EMPLOYEES CAN SEE THEIR OWN WORK ORDER REQUESTS
                     <li>
-                        <Link className="link" to="#" onClick={() => { 
+                        <Link className="link" to="#" onClick={() => {
+                        setFOption(1);
+                        setFP("");
+                        setFS(""); 
                         setIsFormToggled(false);
                         setIsNormalToggled(false);
                         setIsDetailToggled(false);
@@ -305,7 +339,10 @@ export function Dashboard() {
                     }
 
                     { // NORMAL MANAGERS CAN SEE ALL THEIR DEPARTMENT WORK ORDER REQUESTS
-                    sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link className="link" to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Manager" && sessionStorage.getItem("employeeDepartment") !== "IT" && sessionStorage.getItem("employeeDepartment") !== "Maintenance" ? <li><Link className="link" to="#" onClick={() => {
+                        setFOption(2);
+                        setFP("");
+                        setFS("");   
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false); 
@@ -316,7 +353,10 @@ export function Dashboard() {
                     }
 
                     { // NORMAL IT/MAINTENANCE TECHNICIANS CAN SEE REQUESTS ASSIGNED TO THEM
-                    sessionStorage.getItem("employeePosition") === "Technician" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Technician" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => {
+                        setFOption(3);
+                        setFP("");
+                        setFS("");   
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false); 
@@ -326,7 +366,10 @@ export function Dashboard() {
                     }
 
                     { // IT/MAINTENANCE MANAGERS CAN SEE UNASSIGNED IT OR MAINTENANCE REQUESTS
-                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => {
+                        setFOption(4);
+                        setFP("");
+                        setFS("");   
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false);  
@@ -336,7 +379,10 @@ export function Dashboard() {
                     }
 
                     { // IT/MAINTENANCE MANAGERS CAN ONLY SEE ASSIGNED IT OR MAINTENANCE REQUESTS
-                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => { 
+                    sessionStorage.getItem("employeePosition") === "Manager" && (sessionStorage.getItem("employeeDepartment") === "IT" || sessionStorage.getItem("employeeDepartment") === "Maintenance") ? <li><Link className="link" to="#" onClick={() => {
+                        setFOption(5);
+                        setFP("");
+                        setFS("");   
                         setIsFormToggled(false);
                         setIsPersonalToggled(false);
                         setIsDetailToggled(false);  
@@ -431,6 +477,25 @@ export function Dashboard() {
 
                 <div className="grid">
                     <h2>My Requests</h2>
+                    <div className="reqFilter">
+                        <label>Priority:</label>
+                        <select onChange={e => setFP(e.target.value)}>
+                            <option value="">All</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                        <label>Status:</label>
+                        <select onChange={e => setFS(e.target.value)}>
+                            <option value="">All</option>
+                            <option value="Unassigned">Unassigned</option>
+                            <option value="Assigned">Assigned</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Complete">Complete</option>
+                        </select>
+                        <button onClick={(e)=>{superFilter(e)}}>Filter</button>
+                    </div>
                     <div className="head">
                         <p>Request ID</p>
                         <p>Assigned Tech</p>
@@ -482,7 +547,30 @@ export function Dashboard() {
         </div>
         : null }
 
-        { isPersonalToggled && filteredRequests.length === 0 ? <h2>There Are No Work Order Requests of This Type to Show</h2> : null }
+        { isPersonalToggled && filteredRequests.length === 0 ? 
+        <div className="grid">
+            <h2>My Requests</h2>
+            <div className="reqFilter">
+            <label>Priority:</label>
+                <select onChange={e => setFP(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+                <label>Status:</label>
+                <select onChange={e => setFS(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="Unassigned">Unassigned</option>
+                    <option value="Assigned">Assigned</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Complete">Complete</option>
+                </select>
+                <button onClick={(e)=>{superFilter(e)}}>Filter</button>
+            </div>
+            <h3>There Are No Work Order Requests of This Type to Show</h3>
+        </div> : null }
 
 
 {
@@ -494,6 +582,27 @@ export function Dashboard() {
 
                 <div className="grid">
                     <h2>Work Order Requests</h2>
+                    <div className="reqFilter">
+                        <label>Priority:</label>
+                        <select onChange={e => setFP(e.target.value)}>
+                            <option value="">All</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Emergency">Emergency</option>
+                        </select>
+                        { fOption === 4 ? null : <>
+                        <label>Status:</label>
+                        <select onChange={e => setFS(e.target.value)}>
+                            <option value="">All</option>
+                            { fOption === 3 || fOption === 5 ? null : <option value="Unassigned">Unassigned</option> }
+                            <option value="Assigned">Assigned</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Complete">Complete</option>
+                        </select></>
+                        }
+                        <button onClick={(e)=>{superFilter(e)}}>Filter</button>
+                    </div>
                     <div className="head">
                         <p>Request ID</p>
                         <p>Created By</p>
@@ -545,7 +654,32 @@ export function Dashboard() {
         </div>
         : null }
 
-        { isNormalToggled && filteredRequests.length === 0 ? <h2>There Are No Work Order Requests of This Type to Show</h2> : null }
+        { isNormalToggled && filteredRequests.length === 0 ? 
+        <div className="grid">
+            <h2>My Requests</h2>
+            <div className="reqFilter">
+            <label>Priority:</label>
+                <select onChange={e => setFP(e.target.value)}>
+                    <option value="">All</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Emergency">Emergency</option>
+                </select>
+                { fOption === 4 ? null : <>
+                    <label>Status:</label>
+                    <select onChange={e => setFS(e.target.value)}>
+                        <option value="">All</option>
+                        { fOption === 3 || fOption === 5 ? null : <option value="Unassigned">Unassigned</option> }
+                        <option value="Assigned">Assigned</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Complete">Complete</option>
+                    </select></>
+                }
+                <button onClick={(e)=>{superFilter(e)}}>Filter</button>
+            </div>
+            <h3>There Are No Work Order Requests of This Type to Show</h3>
+        </div> : null }
 
         {
             // DETAILED VIEW
@@ -555,8 +689,8 @@ export function Dashboard() {
             <div className="details">
                 <div className="details-title"><strong>Work Order Details</strong></div>
                 
-                { // ONLY EMPLOYEES THAT CREATE REQUESTS AND THE REQUEST HASN'T BEEN ASSIGNED CAN DELETE IT
-                requestDetails.employee === sessionStorage.getItem("employeeName") && requestDetails.status === "Unassigned" ? 
+                { // ONLY MANAGERS OR EMPLOYEES THAT CREATE REQUESTS (AND THE REQUEST HASN'T BEEN ASSIGNED) CAN DELETE IT
+                (requestDetails.employee === sessionStorage.getItem("employeeName") && requestDetails.status === "Unassigned") ||  sessionStorage.getItem("employeePosition") === "Manager" ? 
                 <button className="delete-request" onClick={(e)=>{
                     e.preventDefault()
                     axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
