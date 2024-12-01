@@ -509,16 +509,16 @@ export function Dashboard() {
                 return (
                     <div className="body" key={request.id}>
                         <p>#{request.id}</p>
-                        { request.assigned === "Unassigned" ? <p style={{color: "gold"}}>Pending</p>: <p>{request.assigned}</p>}
+                        { request.assigned === "Unassigned" ? <p style={{color: "GoldenRod", fontWeight: "bold"}}>Pending</p>: <p>{request.assigned}</p>}
                         <p>{request.asset}</p>
                         {(()=>{
                             if(request.priority === "Low"){
                                 return (
-                                    <p style={{color: "green", fontWeight: "bold"}}>{request.priority}</p>
+                                    <p style={{color: "YellowGreen", fontWeight: "bold"}}>{request.priority}</p>
                                 )
                             } else if(request.priority === "Medium"){
                                 return (
-                                    <p style={{color: "yellow", fontWeight: "bold"}}>{request.priority}</p>
+                                    <p style={{color: "GoldenRod", fontWeight: "bold"}}>{request.priority}</p>
                                 )
                             } else if(request.priority === "High") {
                                 return (
@@ -621,11 +621,11 @@ export function Dashboard() {
                         {(()=>{
                             if(request.priority === "Low"){
                                 return (
-                                    <p style={{color: "green", fontWeight: "bold"}}>{request.priority}</p>
+                                    <p style={{color: "YellowGreen", fontWeight: "bold"}}>{request.priority}</p>
                                 )
                             } else if(request.priority === "Medium"){
                                 return (
-                                    <p style={{color: "yellow", fontWeight: "bold"}}>{request.priority}</p>
+                                    <p style={{color: "GoldenRod", fontWeight: "bold"}}>{request.priority}</p>
                                 )
                             } else if(request.priority === "High") {
                                 return (
@@ -745,11 +745,11 @@ export function Dashboard() {
 
                             if(dayDiff > 5){ // GREATER THAN 5 DAYS AWAY
                                 return (
-                                    <span className="date" style={{color: "green"}}>{displayDate}</span>
+                                    <span className="date" style={{color: "YellowGreen"}}>{displayDate}</span>
                                 )
                             } else if(dayDiff > 3){ // GREATER THAN 3 DAYS AWAY
                                 return (
-                                    <span className="date" style={{color: "yellow"}}>{displayDate}</span>
+                                    <span className="date" style={{color: "GoldenRod"}}>{displayDate}</span>
                                 )
                             } else if(dayDiff > 0) { // GREATER THAN 0 DAYS AWAY
                                 return (
@@ -847,11 +847,11 @@ export function Dashboard() {
                         {(()=>{
                             if(requestDetails.priority === "Low"){
                                 return (
-                                    <p style={{color: "green", fontWeight: "bold"}}>{requestDetails.priority}</p>
+                                    <p style={{color: "YellowGreen", fontWeight: "bold"}}>{requestDetails.priority}</p>
                                 )
                             } else if(requestDetails.priority === "Medium"){
                                 return (
-                                    <p style={{color: "yellow", fontWeight: "bold"}}>{requestDetails.priority}</p>
+                                    <p style={{color: "GoldenRod", fontWeight: "bold"}}>{requestDetails.priority}</p>
                                 )
                             } else if(requestDetails.priority === "High") {
                                 return (
