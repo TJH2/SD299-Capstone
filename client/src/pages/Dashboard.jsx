@@ -479,7 +479,7 @@ export function Dashboard() {
                     <h2>My Requests</h2>
                     <div className="reqFilter">
                         <label>Priority:</label>
-                        <select onChange={e => setFP(e.target.value)}>
+                        <select defaultValue={fP} onChange={e => setFP(e.target.value)}>
                             <option value="">All</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
@@ -487,7 +487,7 @@ export function Dashboard() {
                             <option value="Emergency">Emergency</option>
                         </select>
                         <label>Status:</label>
-                        <select onChange={e => setFS(e.target.value)}>
+                        <select defaultValue={fS} onChange={e => setFS(e.target.value)}>
                             <option value="">All</option>
                             <option value="Unassigned">Unassigned</option>
                             <option value="Assigned">Assigned</option>
@@ -552,7 +552,7 @@ export function Dashboard() {
             <h2>My Requests</h2>
             <div className="reqFilter">
             <label>Priority:</label>
-                <select onChange={e => setFP(e.target.value)}>
+                <select defaultValue={fP} onChange={e => setFP(e.target.value)}>
                     <option value="">All</option>
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -560,7 +560,7 @@ export function Dashboard() {
                     <option value="Emergency">Emergency</option>
                 </select>
                 <label>Status:</label>
-                <select onChange={e => setFS(e.target.value)}>
+                <select defaultValue={fS} onChange={e => setFS(e.target.value)}>
                     <option value="">All</option>
                     <option value="Unassigned">Unassigned</option>
                     <option value="Assigned">Assigned</option>
@@ -584,7 +584,7 @@ export function Dashboard() {
                     <h2>Work Order Requests</h2>
                     <div className="reqFilter">
                         <label>Priority:</label>
-                        <select onChange={e => setFP(e.target.value)}>
+                        <select defaultValue={fP} onChange={e => setFP(e.target.value)}>
                             <option value="">All</option>
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
@@ -593,7 +593,7 @@ export function Dashboard() {
                         </select>
                         { fOption === 4 ? null : <>
                         <label>Status:</label>
-                        <select onChange={e => setFS(e.target.value)}>
+                        <select defaultValue={fS} onChange={e => setFS(e.target.value)}>
                             <option value="">All</option>
                             { fOption === 3 || fOption === 5 ? null : <option value="Unassigned">Unassigned</option> }
                             <option value="Assigned">Assigned</option>
@@ -659,7 +659,7 @@ export function Dashboard() {
             <h2>My Requests</h2>
             <div className="reqFilter">
             <label>Priority:</label>
-                <select onChange={e => setFP(e.target.value)}>
+                <select defaultValue={fP} onChange={e => setFP(e.target.value)}>
                     <option value="">All</option>
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -668,7 +668,7 @@ export function Dashboard() {
                 </select>
                 { fOption === 4 ? null : <>
                     <label>Status:</label>
-                    <select onChange={e => setFS(e.target.value)}>
+                    <select defaultValue={fS} onChange={e => setFS(e.target.value)}>
                         <option value="">All</option>
                         { fOption === 3 || fOption === 5 ? null : <option value="Unassigned">Unassigned</option> }
                         <option value="Assigned">Assigned</option>
@@ -688,31 +688,41 @@ export function Dashboard() {
         { isDetailToggled ?
             <div className="details">
                 <div className="details-title"><strong>Work Order Details</strong></div>
-                
+                <div>
                 { // ONLY MANAGERS OR EMPLOYEES THAT CREATE REQUESTS (AND THE REQUEST HASN'T BEEN ASSIGNED) CAN DELETE IT
                 (requestDetails.employee === sessionStorage.getItem("employeeName") && requestDetails.status === "Unassigned") ||  sessionStorage.getItem("employeePosition") === "Manager" ? 
                 <button className="delete-request" onClick={(e)=>{
                     e.preventDefault()
-                    axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
-                        response => {
-                            console.log(response);
-                            let newRequestArray = [];
+                    if(confirm("Are You Sure You Want to Delete This Work Order Request?")) {
+                        axios.delete(`http://localhost:3000/delete-request/${requestDetails.id}`).then(
+                            response => {
+                                console.log(response);
+                                let newRequestArray = [];
                             
-                            requests.map((request => {
-                                if(request.id !== requestDetails.id) {
-                                    newRequestArray.push(request);
-                                }
-                            }));
+                                requests.map((request => {
+                                    if(request.id !== requestDetails.id) {
+                                        newRequestArray.push(request);
+                                    }
+                                }));
 
-                            setRequests(newRequestArray);
-                        }
-                    ).catch(error => {
-                        console.log(error);
-                    })
-            
-                    setIsDetailToggled(false);
+                                setRequests(newRequestArray);
+                            }
+                        ).catch(error => {
+                            console.log(error);
+                        })
+                        setIsDetailToggled(false);
+                    }
+
                 }}>Delete</button>
                 : <span className="delete-request"></span> }
+                <button style={{marginLeft: "5px", padding: "0px 20px"}} onClick={
+                    (e)=> {
+                        e.preventDefault()
+                        setIsDetailToggled(false);
+                        fOption == 1 ? setIsPersonalToggled(true): setIsNormalToggled(true)
+                    }
+                }>Back</button>
+                </div>
                 
                 
                 <div className="date-details">    
@@ -760,8 +770,6 @@ export function Dashboard() {
                                     <span className="date" style={{color: "red"}}>{displayDate}</span>
                                 )
                             }
-
-
                         })()}
                     </div>
                 </div>
