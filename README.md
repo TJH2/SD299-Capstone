@@ -11,16 +11,19 @@ This program was created using ReactJS with a SQLite database.
 INSTRUCTIONS:
 Clone the Repo, CD into both client & server folders and run "npm run dev"
 
-Sales Manager: sm@test.com//123
-Salesman Employee1: s1@test.com//123
-Salesman Employee2: s2@test.com//123
-Jake Holmes: jh@test.com//123
-Maintenance Manager: mm@test.com//123
-Maintenance Employee1: m1@test.com//123
-Maintenance Employee2: m2@test.com//123
-IT Manager: im@test.com//123
-IT Employee1: i1@test.com//123
-IT Employee2: i2@test.com//123
+SALES
+Jan "The Man": JTMan@cm.com//123 - Manager
+Erlich Bachman: EBachman@cm.com//123 - Employee
+
+MAINTENANCE
+Hank Hill: HHill@cm.com//123 - Manager
+Dale Gribble: DGribble@cm.com//123 - Technician
+Rusty Shackleford: RShackleford@cm.com//123 - Technician
+
+IT
+Richard Hendrix: RHendrix@cm.com//123 - Manager
+Bertram Gilfoyle: BGilfoyle@cm.com//123 - Technician
+Big Head: BHead@cm.com//123 - Technician
 
 
 ## Work Order Form
